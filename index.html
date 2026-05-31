@@ -949,6 +949,7 @@ function applyAdminState() {
     lockBtn.innerHTML = '&#128274;';
     lockBtn.onclick = showAdminSection;
   }
+  renderPacks();
 }
 
 const STORAGE_KEY = 'prodbyjeremiah_v1';
@@ -1021,7 +1022,7 @@ function renderPacks() {
       </div>
       <div class="pack-actions">
         <button class="btn btn-primary" onclick="openDownload('${p.id}')">⬇ Free Download</button>
-        <button class="btn btn-ghost" onclick="deletePack('${p.id}')" title="Remove">✕</button>
+        ${isUnlocked() ? `<button class="btn btn-ghost" onclick="deletePack('${p.id}')" title="Remove">✕</button>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -1063,6 +1064,7 @@ document.getElementById('dl-modal').addEventListener('click', e => {
 });
 
 function deletePack(id) {
+  if (!isUnlocked()) { showToast('Enter password to delete packs', true); return; }
   if (!confirm('Remove this pack?')) return;
   packs = packs.filter(p => p.id !== id);
   savePacks(packs);
