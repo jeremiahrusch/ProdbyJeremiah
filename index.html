@@ -798,12 +798,18 @@ footer {
   </section>
 </div>
 
-<!-- UPLOAD -->
+<!-- ADD PACK PANEL -->
 <div class="upload-wrap" id="upload">
   <section>
     <div class="section-header">
-      <h2 class="section-title">Upload a <span class="accent">Pack</span></h2>
+      <h2 class="section-title">Add a <span class="accent">Pack</span></h2>
     </div>
+
+    <div style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--gold);padding:1rem 1.25rem;margin-bottom:2rem;font-size:12px;color:var(--muted);line-height:1.8;">
+      ▶ Upload your ZIP to <strong style="color:var(--white)">Google Drive</strong> → right-click → Share → <em>Anyone with link</em> → copy the link and paste below.<br>
+      ▶ This tool generates the JSON entry. Copy it into <strong style="color:var(--white)">packs.json</strong> on GitHub → Netlify deploys in ~30 seconds.
+    </div>
+
     <div class="upload-grid">
       <div class="field">
         <label>Pack Name *</label>
@@ -828,37 +834,36 @@ footer {
         <label>Description</label>
         <textarea id="pack-desc" placeholder="What's inside? What makes it special?"></textarea>
       </div>
-    </div>
-
-    <div class="field" style="margin-bottom:1.5rem;">
-      <label>Pack File (ZIP, RAR — max 500MB) *</label>
-      <div class="file-drop" id="file-drop" onclick="document.getElementById('file-input').click()">
-        <div class="file-drop-icon">⬆</div>
-        <p><strong>Click to choose file</strong> or drag &amp; drop</p>
-        <p>.zip .rar .7z accepted</p>
-        <div class="file-name" id="file-chosen"></div>
+      <div class="field full">
+        <label>Google Drive / Dropbox Download Link *</label>
+        <input type="text" id="pack-file-link" placeholder="https://drive.google.com/file/d/…/view?usp=sharing">
       </div>
-      <input type="file" id="file-input" accept=".zip,.rar,.7z" style="display:none">
-    </div>
-
-    <div class="field" style="margin-bottom:1.5rem;">
-      <label>Cover Art (optional — JPG / PNG)</label>
-      <div class="file-drop" id="cover-drop" onclick="document.getElementById('cover-input').click()">
-        <div class="file-drop-icon">🖼</div>
-        <p><strong>Click to add cover art</strong> — square recommended</p>
-        <div class="file-name" id="cover-chosen"></div>
+      <div class="field full">
+        <label>Cover Art Link (optional — any public image URL)</label>
+        <input type="text" id="pack-cover-link" placeholder="https://drive.google.com/file/d/…/view or direct image URL">
       </div>
-      <input type="file" id="cover-input" accept=".jpg,.jpeg,.png,.webp" style="display:none">
     </div>
 
-    <div class="upload-progress" id="upload-progress">
-      <div class="progress-label" id="progress-label">Uploading…</div>
-      <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
-    </div>
-
-    <button class="btn btn-primary" id="upload-btn" style="width:100%;margin-top:1rem;padding:16px;font-size:14px;">
-      ⬆ &nbsp;Publish Pack
+    <button class="btn btn-primary" id="upload-btn" style="width:100%;margin-top:0.5rem;padding:16px;font-size:14px;">
+      ⚙ &nbsp;Generate packs.json Entry
     </button>
+
+    <!-- JSON OUTPUT -->
+    <div id="json-output-wrap" style="display:none;margin-top:2rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+        <label style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);">
+          ▶ Copy this into packs.json on GitHub
+        </label>
+        <button class="btn btn-ghost" onclick="copyJson()" style="padding:6px 16px;font-size:11px;flex:0;">Copy</button>
+      </div>
+      <pre id="json-output" style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--blue-mid);padding:1.25rem;font-family:var(--font-mono);font-size:12px;color:var(--white);overflow-x:auto;white-space:pre-wrap;line-height:1.7;"></pre>
+      <div style="margin-top:1rem;font-size:12px;color:var(--muted);line-height:1.9;">
+        1. Go to your GitHub repo → open <strong style="color:var(--white)">packs.json</strong><br>
+        2. Click the ✏️ pencil (edit) icon<br>
+        3. Add a comma after the last <code style="color:var(--blue-bright)">}</code> entry, then paste this block<br>
+        4. Click <strong style="color:var(--white)">Commit changes</strong> → Netlify deploys automatically ✓
+      </div>
+    </div>
   </section>
 </div>
 
@@ -897,15 +902,14 @@ footer {
 
 <div class="toast" id="toast"></div>
 
+
+
 <script>
-// ── ADMIN AUTH ────────────────────────────────────────────
-// Change this password to whatever you want — only you will see this file
-const ADMIN_PASSWORD = 'ProdbyJeremiah';
+// ── ADMIN AUTH ────────────────────────────────────────────────
+const ADMIN_PASSWORD    = 'ProdbyJeremiah';
 const ADMIN_SESSION_KEY = 'pbj_admin_session';
 
-function isUnlocked() {
-  return sessionStorage.getItem(ADMIN_SESSION_KEY) === '1';
-}
+function isUnlocked() { return sessionStorage.getItem(ADMIN_SESSION_KEY) === '1'; }
 
 function tryUnlock() {
   const pw = document.getElementById('admin-password').value;
@@ -949,64 +953,117 @@ function applyAdminState() {
     lockBtn.innerHTML = '&#128274;';
     lockBtn.onclick = showAdminSection;
   }
+  renderPacks(); // re-render to show/hide delete buttons
 }
 
-const STORAGE_KEY = 'prodbyjeremiah_v1';
-function loadPacks() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; } }
-function savePacks(p) { localStorage.setItem(STORAGE_KEY, JSON.stringify(p)); }
-
-let packs = loadPacks();
-let activeGenre = 'all';
-let searchQuery = '';
+// ── STATE ─────────────────────────────────────────────────────
+let packs        = [];
+let activeGenre  = 'all';
+let searchQuery  = '';
 let pendingDownloadId = null;
 
-// Demo seed
-if (packs.length === 0) {
-  packs = [
-    { id: 'demo1', name: 'Midnight Trap Vol. 1', artist: 'ProdbyJeremiah', genre: 'Trap', bpm: '140–150', desc: '24 hard-hitting trap drum loops, 808s, hi-hat rolls, and melodic one-shots. Dark, moody, ready to use.', downloads: 1247, date: '2025-03-12', fileUrl: null, coverUrl: null },
-    { id: 'demo2', name: 'Late Night Vibes', artist: 'ProdbyJeremiah', genre: 'R&B', bpm: '85–95', desc: 'Smooth R&B loops, lush chords, and silky drum patterns. Perfect for soulful records.', downloads: 843, date: '2025-05-01', fileUrl: null, coverUrl: null },
-    { id: 'demo3', name: 'Off The Radar Kit', artist: 'ProdbyJeremiah', genre: 'Underground', bpm: '70–95', desc: 'Raw, unfiltered underground sounds. Gritty samples, dusty drums, no fluff.', downloads: 2104, date: '2025-06-10', fileUrl: null, coverUrl: null }
-  ];
-  savePacks(packs);
+// ── LOAD packs.json FROM GITHUB/NETLIFY ───────────────────────
+async function loadPacks() {
+  try {
+    const res = await fetch('packs.json?_=' + Date.now()); // cache-bust
+    if (!res.ok) throw new Error('packs.json not found');
+    return await res.json();
+  } catch (e) {
+    console.warn('Could not load packs.json, using demo data.', e);
+    // Demo fallback so the site looks good before packs.json exists
+    return [
+      {
+        id: 'demo1',
+        name: 'Midnight Trap Vol. 1',
+        artist: 'ProdbyJeremiah',
+        genre: 'Trap',
+        bpm: '140–150',
+        desc: '24 hard-hitting trap drum loops, 808s, hi-hat rolls, and melodic one-shots. Dark, moody, ready to use.',
+        cover: null,
+        file: null
+      },
+      {
+        id: 'demo2',
+        name: 'Late Night Vibes',
+        artist: 'ProdbyJeremiah',
+        genre: 'R&B',
+        bpm: '85–95',
+        desc: 'Smooth R&B loops, lush chords, and silky drum patterns. Perfect for soulful records.',
+        cover: null,
+        file: null
+      },
+      {
+        id: 'demo3',
+        name: 'Off The Radar Kit',
+        artist: 'ProdbyJeremiah',
+        genre: 'Underground',
+        bpm: '70–95',
+        desc: 'Raw, unfiltered underground sounds. Gritty samples, dusty drums, no fluff.',
+        cover: null,
+        file: null
+      }
+    ];
+  }
 }
 
+// ── GOOGLE DRIVE LINK CONVERTER ───────────────────────────────
+// Converts a shareable Drive link to a direct download URL
+function driveDirectUrl(url) {
+  if (!url) return null;
+  // Handle both /file/d/ID/view and /open?id=ID formats
+  const m = url.match(/\/d\/([a-zA-Z0-9_-]{20,})|[?&]id=([a-zA-Z0-9_-]{20,})/);
+  if (m) {
+    const id = m[1] || m[2];
+    return `https://drive.google.com/uc?export=download&id=${id}`;
+  }
+  return url; // not a Drive link, return as-is (Dropbox, OneDrive, direct URL, etc.)
+}
+
+// ── UI HELPERS ────────────────────────────────────────────────
 function genWaveform() {
-  return Array.from({length:28}, () => `<div class="wave-bar" style="height:${Math.floor(Math.random()*75)+10}%"></div>`).join('');
+  return Array.from({length:28}, () =>
+    `<div class="wave-bar" style="height:${Math.floor(Math.random()*75)+10}%"></div>`
+  ).join('');
 }
 
 function filteredPacks() {
   return packs.filter(p => {
     const gm = activeGenre === 'all' || p.genre === activeGenre;
-    const q = searchQuery.toLowerCase();
-    const tm = !q || p.name.toLowerCase().includes(q) || (p.artist||'').toLowerCase().includes(q) || p.genre.toLowerCase().includes(q) || (p.bpm||'').includes(q);
+    const q  = searchQuery.toLowerCase();
+    const tm = !q || p.name.toLowerCase().includes(q)
+                  || (p.artist||'').toLowerCase().includes(q)
+                  || p.genre.toLowerCase().includes(q)
+                  || (p.bpm||'').includes(q);
     return gm && tm;
   });
 }
 
 function updateHUD() {
-  const total = packs.reduce((a,p) => a+(p.downloads||0), 0);
-  document.getElementById('rings-hud').textContent = (total >= 1000 ? (total/1000).toFixed(1)+'K' : total) + ' RINGS';
   document.getElementById('total-packs').textContent = packs.length;
-  document.getElementById('total-downloads').textContent = total >= 1000 ? (total/1000).toFixed(1)+'k' : total;
+  // No persistent download count without a database — show pack count instead
+  document.getElementById('total-downloads').textContent = '∞';
+  document.getElementById('rings-hud').textContent = packs.length + ' PACKS';
 }
 
 function renderPacks() {
-  const grid = document.getElementById('packs-grid');
+  const grid    = document.getElementById('packs-grid');
   const visible = filteredPacks();
-  document.getElementById('pack-count').textContent = `${visible.length} pack${visible.length !== 1 ? 's' : ''}`;
+  document.getElementById('pack-count').textContent = `${visible.length} pack${visible.length!==1?'s':''}`;
   updateHUD();
 
   if (visible.length === 0) {
-    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">NO RINGS</div><p>No packs found — be the first to drop one!</p></div>`;
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">NO RINGS</div><p>No packs found.</p></div>`;
     return;
   }
 
   grid.innerHTML = visible.map(p => {
-    const coverStyle = p.coverUrl ? `background-image:url('${p.coverUrl}');background-size:cover;background-position:center` : '';
-    const coverInner = p.coverUrl ? '' : `<div class="cover-default"><div class="cover-ring-big">♪</div><div class="cover-genre-label">${p.genre}</div></div>`;
+    const coverInner = p.cover
+      ? `<img src="${p.cover}" alt="${p.name}" loading="lazy">`
+      : `<div class="cover-default"><div class="cover-ring-big">♪</div><div class="cover-genre-label">${p.genre}</div></div>`;
+
     return `
     <div class="pack-card" data-id="${p.id}">
-      <div class="pack-cover" style="${coverStyle}">${coverInner}</div>
+      <div class="pack-cover">${coverInner}</div>
       <div class="pack-meta">
         <span class="pack-genre">${p.genre}</span>
         ${p.bpm ? `<span class="pack-bpm">${p.bpm} BPM</span>` : ''}
@@ -1015,45 +1072,38 @@ function renderPacks() {
       ${p.artist ? `<div class="pack-artist">by ${p.artist}</div>` : ''}
       <div class="waveform">${genWaveform()}</div>
       ${p.desc ? `<div class="pack-desc">${p.desc.slice(0,110)}${p.desc.length>110?'…':''}</div>` : ''}
-      <div class="download-count">
-        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15V3m0 12l-4-4m4 4l4-4M2 19h20"/></svg>
-        ${(p.downloads||0).toLocaleString()} downloads
-      </div>
       <div class="pack-actions">
-        <button class="btn btn-primary" onclick="openDownload('${p.id}')">⬇ Free Download</button>
-        <button class="btn btn-ghost" onclick="deletePack('${p.id}')" title="Remove">✕</button>
+        <button class="btn btn-primary" onclick="triggerDownload('${p.id}')">⬇ Free Download</button>
       </div>
     </div>`;
   }).join('');
 }
 
-function openDownload(id) {
+// ── DOWNLOAD ──────────────────────────────────────────────────
+function triggerDownload(id) {
   const p = packs.find(x => x.id === id);
   if (!p) return;
   pendingDownloadId = id;
   document.getElementById('dl-modal-title').textContent = p.name;
-  document.getElementById('dl-modal-desc').textContent = p.fileUrl
-    ? `Get the full pack free — no sign-up. ${(p.downloads||0).toLocaleString()} downloads so far.`
-    : 'Demo pack — connect a backend for real file downloads.';
+  document.getElementById('dl-modal-desc').textContent  = p.file
+    ? `Free download — no sign-up needed.`
+    : 'No file linked yet — add a Google Drive link in packs.json.';
   document.getElementById('dl-modal').classList.add('show');
 }
 
 document.getElementById('dl-confirm').addEventListener('click', () => {
   const p = packs.find(x => x.id === pendingDownloadId);
   if (!p) return;
-  p.downloads = (p.downloads||0) + 1;
-  savePacks(packs);
   document.getElementById('dl-modal').classList.remove('show');
-  if (p.fileUrl) {
-    const a = document.createElement('a');
-    a.href = p.fileUrl;
-    a.download = p.name.replace(/\s+/g,'_') + '.zip';
-    a.click();
-    showToast('○ Ring collected! Download started');
+
+  const url = driveDirectUrl(p.file);
+  if (url) {
+    // Open in new tab — works for Drive, Dropbox, OneDrive, direct links
+    window.open(url, '_blank');
+    showToast('○ Ring collected! Download starting…');
   } else {
-    showToast('Demo pack — add a backend for real downloads');
+    showToast('No file linked yet — edit packs.json to add a download link', true);
   }
-  renderPacks();
 });
 
 document.getElementById('dl-cancel').addEventListener('click', () =>
@@ -1062,80 +1112,53 @@ document.getElementById('dl-modal').addEventListener('click', e => {
   if (e.target === e.currentTarget) e.currentTarget.classList.remove('show');
 });
 
-function deletePack(id) {
-  if (!confirm('Remove this pack?')) return;
-  packs = packs.filter(p => p.id !== id);
-  savePacks(packs);
-  renderPacks();
-  showToast('Pack removed');
-}
-
-// Upload
-let chosenFile = null, chosenCover = null;
-const fileInput = document.getElementById('file-input');
-const coverInput = document.getElementById('cover-input');
-const fileDrop = document.getElementById('file-drop');
-const coverDrop = document.getElementById('cover-drop');
-
-fileInput.addEventListener('change', e => { chosenFile = e.target.files[0]; document.getElementById('file-chosen').textContent = chosenFile ? chosenFile.name : ''; });
-coverInput.addEventListener('change', e => { chosenCover = e.target.files[0]; document.getElementById('cover-chosen').textContent = chosenCover ? chosenCover.name : ''; });
-
-['dragover','dragenter'].forEach(ev => fileDrop.addEventListener(ev, e => { e.preventDefault(); fileDrop.classList.add('over'); }));
-['dragleave','drop'].forEach(ev => fileDrop.addEventListener(ev, e => { e.preventDefault(); fileDrop.classList.remove('over'); }));
-fileDrop.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) { chosenFile = f; document.getElementById('file-chosen').textContent = f.name; } });
-
-['dragover','dragenter'].forEach(ev => coverDrop.addEventListener(ev, e => { e.preventDefault(); coverDrop.classList.add('over'); }));
-['dragleave','drop'].forEach(ev => coverDrop.addEventListener(ev, e => { e.preventDefault(); coverDrop.classList.remove('over'); }));
-coverDrop.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) { chosenCover = f; document.getElementById('cover-chosen').textContent = f.name; } });
-
-document.getElementById('upload-btn').addEventListener('click', async () => {
-  const name = document.getElementById('pack-name').value.trim();
-  const genre = document.getElementById('pack-genre').value;
+// ── UPLOAD PANEL: generates packs.json entry for you ─────────
+// (No actual file upload — just builds the JSON snippet to paste into GitHub)
+document.getElementById('upload-btn').addEventListener('click', () => {
+  const name   = document.getElementById('pack-name').value.trim();
+  const genre  = document.getElementById('pack-genre').value;
   const artist = document.getElementById('pack-artist').value.trim();
-  const bpm = document.getElementById('pack-bpm').value.trim();
-  const desc = document.getElementById('pack-desc').value.trim();
+  const bpm    = document.getElementById('pack-bpm').value.trim();
+  const desc   = document.getElementById('pack-desc').value.trim();
+  const fileLink  = document.getElementById('pack-file-link').value.trim();
+  const coverLink = document.getElementById('pack-cover-link').value.trim();
 
-  if (!name) { showToast('Add a pack name', true); return; }
-  if (!genre) { showToast('Select a genre', true); return; }
-  if (!chosenFile) { showToast('Choose a pack file', true); return; }
-  if (chosenFile.size > 500*1024*1024) { showToast('File too large (max 500MB)', true); return; }
+  if (!name)  { showToast('Add a pack name', true); return; }
+  if (!genre) { showToast('Select a genre', true);  return; }
 
-  const progress = document.getElementById('upload-progress');
-  const bar = document.getElementById('progress-bar');
-  const label = document.getElementById('progress-label');
-  progress.classList.add('show');
+  const id = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 
-  let pct = 0;
-  const interval = setInterval(() => { pct = Math.min(pct + Math.random()*15, 90); bar.style.width = pct+'%'; }, 150);
+  const entry = {
+    id,
+    name,
+    artist,
+    genre,
+    bpm,
+    desc,
+    cover: coverLink || null,
+    file:  fileLink  || null
+  };
 
-  const fileUrl = URL.createObjectURL(chosenFile);
-  let coverUrl = null;
-  if (chosenCover) {
-    coverUrl = await new Promise(res => { const r = new FileReader(); r.onload = e => res(e.target.result); r.readAsDataURL(chosenCover); });
-  }
+  const snippet = JSON.stringify(entry, null, 2);
 
-  await new Promise(r => setTimeout(r, 1200));
-  clearInterval(interval);
-  bar.style.width = '100%';
-  label.textContent = 'Processing…';
-  await new Promise(r => setTimeout(r, 600));
-
-  packs.unshift({ id:'pack_'+Date.now(), name, artist, genre, bpm, desc, downloads:0, date:new Date().toISOString().split('T')[0], fileUrl, coverUrl });
-  savePacks(packs);
-  renderPacks();
-
-  ['pack-name','pack-artist','pack-bpm','pack-desc'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('pack-genre').value = '';
-  document.getElementById('file-chosen').textContent = '';
-  document.getElementById('cover-chosen').textContent = '';
-  chosenFile = null; chosenCover = null;
-  fileInput.value = ''; coverInput.value = '';
-
-  setTimeout(() => { bar.style.width = '0%'; progress.classList.remove('show'); label.textContent = 'Uploading…'; }, 800);
-  showToast('○ Pack published! Ring collected 🔥');
-  document.getElementById('packs').scrollIntoView({ behavior: 'smooth' });
+  // Show it in a copyable box
+  document.getElementById('json-output-wrap').style.display = 'block';
+  document.getElementById('json-output').textContent = snippet;
+  document.getElementById('json-output-wrap').scrollIntoView({ behavior: 'smooth' });
+  showToast('JSON entry ready — copy it into packs.json on GitHub!');
 });
 
+// ── COPY JSON ─────────────────────────────────────────────────
+function copyJson() {
+  const text = document.getElementById('json-output').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Copied! Now paste it into packs.json on GitHub');
+  }).catch(() => {
+    showToast('Select the text above and copy manually', true);
+  });
+}
+
+// ── FILTER / SEARCH ───────────────────────────────────────────
 document.querySelectorAll('.pill').forEach(pill => {
   pill.addEventListener('click', () => {
     document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
@@ -1144,19 +1167,27 @@ document.querySelectorAll('.pill').forEach(pill => {
     renderPacks();
   });
 });
-document.getElementById('search-input').addEventListener('input', e => { searchQuery = e.target.value; renderPacks(); });
+document.getElementById('search-input').addEventListener('input', e => {
+  searchQuery = e.target.value;
+  renderPacks();
+});
 
+// ── TOAST ─────────────────────────────────────────────────────
 let toastTimeout;
 function showToast(msg, error=false) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
+  t.innerHTML = msg;
   t.className = 'toast show' + (error ? ' error' : '');
   clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(() => t.classList.remove('show'), 3200);
+  toastTimeout = setTimeout(() => t.classList.remove('show'), 3800);
 }
 
-renderPacks();
-applyAdminState();
+// ── INIT ──────────────────────────────────────────────────────
+(async () => {
+  packs = await loadPacks();
+  renderPacks();
+  applyAdminState();
+})();
 
 // ── SONIC SCENE CANVAS ────────────────────────────────────
 (function() {
