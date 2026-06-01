@@ -785,19 +785,6 @@ footer {
   <div class="packs-grid" id="packs-grid"></div>
 </section>
 
-<!-- ADMIN LOGIN WALL -->
-<div class="admin-login-wrap" id="admin-login-wrap">
-  <section>
-    <div class="lock-icon">&#128274;</div>
-    <div class="lock-label">Producer Access</div>
-    <div class="lock-sub">Enter your password to publish packs</div>
-    <div class="lock-form">
-      <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')tryUnlock()">
-      <button class="btn btn-primary" onclick="tryUnlock()" style="flex:0;white-space:nowrap;padding:10px 20px;">Unlock</button>
-    </div>
-  </section>
-</div>
-
 <!-- ADD PACK PANEL -->
 <div class="upload-wrap" id="upload">
   <section>
@@ -873,11 +860,21 @@ footer {
     <h2 class="section-title">About <span class="accent">This Site</span></h2>
   </div>
   <div style="max-width:600px;color:var(--muted);font-size:13px;line-height:2;">
-    <p style="margin-bottom:1rem;">ProdbyJeremiah — a free beat pack hub for producers. Upload your kits and the world can download them instantly. No accounts, no paywalls, no streams.</p>
-    <p style="margin-bottom:1rem;">Producers keep all rights to their work. By uploading you confirm you own the content. Downloads are free for personal and commercial use unless stated otherwise in the description.</p>
-    <p>Files are stored locally in your browser for this demo version. Connect a backend (Supabase, Firebase) to make it persistent across devices.</p>
+    <p style="margin-bottom:1rem;">All packs on this site are made by <strong style="color:var(--white)">ProdbyJeremiah</strong> and are 100% royalty free. Use them on any project — no credit required, no strings attached.</p>
+    <p>Want something custom? Email <a href="mailto:jeremiah.rusch@gmail.com" style="color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,215,0,0.3);transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='rgba(255,215,0,0.3)'">jeremiah.rusch@gmail.com</a> for custom beat inquiries.</p>
   </div>
 </section>
+
+<!-- ADMIN LOGIN — small, bottom of page -->
+<div id="admin-login-wrap" style="border-top:1px solid var(--border);padding:2rem 2rem 0;max-width:1100px;margin:0 auto;position:relative;z-index:1;">
+  <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+    <span style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted2);">&#128274; Producer Access</span>
+    <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password"
+      onkeydown="if(event.key==='Enter')tryUnlock()"
+      style="max-width:200px;padding:7px 12px;font-size:12px;background:var(--surface);border:1px solid var(--muted2);border-bottom:2px solid var(--muted2);color:var(--muted);font-family:var(--font-mono);outline:none;">
+    <button onclick="tryUnlock()" style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;padding:7px 16px;background:transparent;border:1px solid var(--muted2);color:var(--muted);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--muted2)';this.style.color='var(--muted)'">Unlock</button>
+  </div>
+</div>
 
 <!-- FOOTER -->
 <div class="checker-floor-bottom"></div>
@@ -942,7 +939,8 @@ function showAdminSection() {
 
 function applyAdminState() {
   const unlocked = isUnlocked();
-  document.getElementById('admin-login-wrap').style.display = unlocked ? 'none' : 'block';
+  const loginWrap = document.getElementById('admin-login-wrap');
+  if (loginWrap) loginWrap.style.display = unlocked ? 'none' : 'block';
   document.getElementById('upload').classList.toggle('unlocked', unlocked);
   document.getElementById('nav-upload-link').style.display = unlocked ? 'inline' : 'none';
   const lockBtn = document.getElementById('nav-lock-btn');
@@ -1038,11 +1036,25 @@ function filteredPacks() {
   });
 }
 
+// ── DOWNLOAD COUNTS (persisted in localStorage) ───────────────
+const DL_KEY = 'pbj_downloads_v1';
+function loadDownloadCounts() {
+  try { return JSON.parse(localStorage.getItem(DL_KEY)) || {}; } catch { return {}; }
+}
+function saveDownloadCounts(counts) {
+  try { localStorage.setItem(DL_KEY, JSON.stringify(counts)); } catch {}
+}
+let downloadCounts = loadDownloadCounts();
+
+function getTotalDownloads() {
+  return Object.values(downloadCounts).reduce((a, b) => a + b, 0);
+}
+
 function updateHUD() {
+  const total = getTotalDownloads();
   document.getElementById('total-packs').textContent = packs.length;
-  // No persistent download count without a database — show pack count instead
-  document.getElementById('total-downloads').textContent = '∞';
-  document.getElementById('rings-hud').textContent = packs.length + ' PACKS';
+  document.getElementById('total-downloads').textContent = total >= 1000 ? (total/1000).toFixed(1)+'k' : total;
+  document.getElementById('rings-hud').textContent = (total >= 1000 ? (total/1000).toFixed(1)+'K' : total) + ' RINGS';
 }
 
 function renderPacks() {
@@ -1072,6 +1084,10 @@ function renderPacks() {
       ${p.artist ? `<div class="pack-artist">by ${p.artist}</div>` : ''}
       <div class="waveform">${genWaveform()}</div>
       ${p.desc ? `<div class="pack-desc">${p.desc.slice(0,110)}${p.desc.length>110?'…':''}</div>` : ''}
+      <div class="download-count">
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15V3m0 12l-4-4m4 4l4-4M2 19h20"/></svg>
+        ${(downloadCounts[p.id] || 0).toLocaleString()} downloads
+      </div>
       <div class="pack-actions">
         <button class="btn btn-primary" onclick="triggerDownload('${p.id}')">⬇ Free Download</button>
       </div>
@@ -1096,9 +1112,14 @@ document.getElementById('dl-confirm').addEventListener('click', () => {
   if (!p) return;
   document.getElementById('dl-modal').classList.remove('show');
 
+  // Increment and persist download count
+  downloadCounts[p.id] = (downloadCounts[p.id] || 0) + 1;
+  saveDownloadCounts(downloadCounts);
+  updateHUD();
+  renderPacks();
+
   const url = driveDirectUrl(p.file);
   if (url) {
-    // Open in new tab — works for Drive, Dropbox, OneDrive, direct links
     window.open(url, '_blank');
     showToast('○ Ring collected! Download starting…');
   } else {
@@ -1201,18 +1222,21 @@ function showToast(msg, error=false) {
     { name: 'Chemical Plant Zone', draw: drawChemPlant },
     { name: 'Star Light Zone', draw: drawStarLight },
     { name: 'Marble Zone', draw: drawMarble },
+    { name: 'Casino Night Zone', draw: drawCasinoNight },
+    { name: 'Aquatic Ruin Zone', draw: drawAquaticRuin },
+    { name: 'Sky Chase Zone', draw: drawSkyChase },
+    { name: 'Mystic Cave Zone', draw: drawMysticCave },
   ];
 
   let currentScene = 0;
   let nextScene = 1;
-  let transition = 0; // 0..1 fade progress
+  let transition = 0;
   let transitioning = false;
   let sceneTimer = 0;
-  const SCENE_DURATION = 220; // frames (~7s at 30fps)
+  const SCENE_DURATION = 220;
   const FADE_FRAMES = 40;
 
-  // Parallax scroll offsets per scene
-  let scrollX = [0, 0, 0, 0];
+  let scrollX = [0,0,0,0,0,0,0,0];
 
   function resize() {
     canvas.width = canvas.offsetWidth;
@@ -1336,6 +1360,74 @@ function showToast(msg, error=false) {
         ctx.lineWidth = 6; ctx.strokeStyle = '#228B22'; ctx.stroke();
       }
     }
+
+    // ── PIXEL KID: African American boy running in pixel art style ──
+    function drawPixelKid(px2, x, y, frame) {
+      const f = Math.floor(frame * 0.18) % 4;
+      const p = px2;
+      function blk(col, dx, dy, w, h) {
+        ctx.fillStyle = col;
+        ctx.fillRect(x + dx*p, y + dy*p, (w||1)*p, (h||1)*p);
+      }
+      const SKIN='#7B3F00', SKIN2='#8B4A00', HAIR='#111111';
+      const SHOE='#ffffff', SOLE='#cccccc', RED='#dd2200';
+      const BLUE='#2233cc', WHITE='#ffffff', DARK='#000000', GOLD='#ffd700';
+
+      const runFrames = [
+        {lly:0,rly:2,loff:1,roff:0},
+        {lly:1,rly:1,loff:0,roff:0},
+        {lly:2,rly:0,loff:0,roff:1},
+        {lly:1,rly:1,loff:0,roff:0},
+      ];
+      const fr = runFrames[f];
+
+      // Speed lines
+      ctx.strokeStyle = 'rgba(255,255,255,0.45)'; ctx.lineWidth = 2;
+      for (let sl = 0; sl < 4; sl++) {
+        ctx.beginPath();
+        ctx.moveTo(x - 8*p - sl*6, y + sl*3*p);
+        ctx.lineTo(x - 2*p, y + sl*3*p);
+        ctx.stroke();
+      }
+
+      // Back arm
+      blk(SKIN, -1, 3 + (f%2), 1, 2);
+      // Torso
+      blk(RED,  0, 2, 4, 3);
+      // Shirt number "1"
+      blk(WHITE, 2, 3, 1, 1);
+      // Collar/neck
+      blk(SKIN2, 1, 2, 2, 1);
+      // Head
+      blk(SKIN, 0, -3, 4, 4);
+      // Afro hair (natural puff)
+      blk(HAIR, -1, -6, 6, 4);
+      blk(HAIR, 0,  -5, 4, 1);
+      // Eyes
+      blk(WHITE, 1, -2, 1, 1); blk(WHITE, 2, -2, 1, 1);
+      blk(DARK,  1, -2, 1, 1); blk(DARK,  2, -2, 1, 1);
+      // Big smile
+      blk(WHITE, 1, -1, 2, 1);
+      blk(DARK,  1,  0, 1, 1); blk(DARK, 2, 0, 1, 1);
+      // Gold chain
+      blk(GOLD, 1, 5, 2, 1);
+      // Front arm (swinging)
+      blk(SKIN, 4, 3 + (1-f%2), 1, 2);
+      // Shorts
+      blk(BLUE, 0, 5, 4, 2);
+      // Left leg
+      blk(SKIN, 0, 7+fr.lly, 2, 2);
+      blk(SHOE, (f%2===0?-1:0), 9+fr.lly+fr.loff, 3, 1);
+      blk(SOLE, (f%2===0?-1:0), 10+fr.lly+fr.loff, 3, 1);
+      // Right leg
+      blk(SKIN, 2, 7+fr.rly, 2, 2);
+      blk(SHOE, (f%2===0?2:1), 9+fr.rly+fr.roff, 3, 1);
+      blk(SOLE, (f%2===0?2:1), 10+fr.rly+fr.roff, 3, 1);
+    }
+
+    const kidX = ((t * 2.5 - sx * 0.95 + 800) % (W + 250)) - 125;
+    const kidY = H * 0.585;
+    drawPixelKid(4, kidX, kidY, t);
   }
 
   // ── SCENE 2: CHEMICAL PLANT ──────────────────────────
@@ -1664,6 +1756,321 @@ function showToast(msg, error=false) {
       const rx = ((r*200+80 - sx*0.9+1800)%(W+200))-100;
       const ry = H*0.55 + Math.sin(t*0.045+r)*16;
       drawRing(ctx, rx, ry, 13, t+r*45);
+    }
+  }
+
+
+  // ── SCENE 5: CASINO NIGHT ZONE ───────────────────────────
+  function drawCasinoNight(ctx, W, H, t, sx) {
+    // Night sky — deep purple
+    const sky = ctx.createLinearGradient(0,0,0,H);
+    sky.addColorStop(0,'#0a001a');
+    sky.addColorStop(0.5,'#1a0035');
+    sky.addColorStop(1,'#2a0050');
+    ctx.fillStyle = sky; ctx.fillRect(0,0,W,H);
+
+    // Stars
+    for (let s = 0; s < 30; s++) {
+      const stx = (s*73+11)%W;
+      const sty = (s*41+7)%(H*0.5);
+      const blink = Math.sin(t*0.08+s)*0.4+0.6;
+      ctx.fillStyle = `rgba(255,255,200,${blink})`;
+      ctx.beginPath(); ctx.arc(stx,sty,1+s%2,0,Math.PI*2); ctx.fill();
+    }
+
+    // Neon casino buildings
+    const casinoColors = ['#ff00ff','#00ffff','#ffff00','#ff6600','#ff0066'];
+    for (let b = 0; b < 7; b++) {
+      const bx = ((b*160+30 - sx*0.25+2000)%(W+220))-110;
+      const bh = H*(0.3+b%3*0.08);
+      ctx.fillStyle = '#0a0018';
+      ctx.fillRect(bx, H-bh, 100, bh);
+      // neon outline
+      const nc = casinoColors[b%5];
+      ctx.strokeStyle = nc; ctx.lineWidth = 2;
+      ctx.strokeRect(bx, H-bh, 100, bh);
+      // sign
+      ctx.fillStyle = nc;
+      ctx.fillRect(bx+10, H-bh+10, 80, 18);
+      // windows with neon glow
+      for (let wy = H-bh+38; wy < H-20; wy+=22) {
+        for (let wx = bx+10; wx < bx+90; wx+=18) {
+          const wc = casinoColors[(Math.floor(wy/22)+Math.floor(wx/18))%5];
+          ctx.fillStyle = wc; ctx.fillRect(wx, wy, 8, 12);
+        }
+      }
+    }
+
+    // Ground — shiny dark floor
+    const ground = ctx.createLinearGradient(0,H*0.75,0,H);
+    ground.addColorStop(0,'#1a001a'); ground.addColorStop(1,'#0a0010');
+    ctx.fillStyle = ground; ctx.fillRect(0,H*0.75,W,H*0.25);
+
+    // Floor reflection strips
+    for (let s = 0; s < 5; s++) {
+      const sc = casinoColors[s];
+      const sx2 = ((s*200+40 - sx*0.9+1500)%(W+200))-100;
+      ctx.fillStyle = sc.replace(')',',0.15)').replace('rgb','rgba');
+      ctx.fillRect(sx2, H*0.75, 60, H*0.25);
+    }
+
+    // Spinning slot reels (rings that look like slot symbols)
+    for (let r = 0; r < 4; r++) {
+      const rx = ((r*220+80 - sx*0.7+1500)%(W+200))-100;
+      const ry = H*0.6 + Math.sin(t*0.06+r)*10;
+      drawRing(ctx, rx, ry, 14, t+r*55);
+      // Star burst around ring
+      ctx.strokeStyle = casinoColors[r%5]; ctx.lineWidth = 1.5;
+      for (let sp = 0; sp < 6; sp++) {
+        const sa = (sp/6)*Math.PI*2 + t*0.04;
+        ctx.beginPath();
+        ctx.moveTo(rx+Math.cos(sa)*18, ry+Math.sin(sa)*18);
+        ctx.lineTo(rx+Math.cos(sa)*26, ry+Math.sin(sa)*26);
+        ctx.stroke();
+      }
+    }
+
+    // Neon signs scrolling
+    for (let ns = 0; ns < 3; ns++) {
+      const nsx = ((ns*350+50 - sx*0.6+1000)%(W+400))-200;
+      const pulse = Math.sin(t*0.12+ns*2)*0.5+0.5;
+      ctx.fillStyle = `rgba(255,${Math.floor(100+pulse*155)},0,${0.7+pulse*0.3})`;
+      ctx.font = `bold ${Math.floor(22+pulse*4)}px monospace`;
+      ctx.fillText('7 7 7', nsx, H*0.5);
+    }
+  }
+
+  // ── SCENE 6: AQUATIC RUIN ZONE ───────────────────────────
+  function drawAquaticRuin(ctx, W, H, t, sx) {
+    // Underwater blue sky
+    const sky = ctx.createLinearGradient(0,0,0,H);
+    sky.addColorStop(0,'#003366');
+    sky.addColorStop(0.5,'#004488');
+    sky.addColorStop(1,'#005599');
+    ctx.fillStyle = sky; ctx.fillRect(0,0,W,H);
+
+    // Light rays from surface
+    for (let ray = 0; ray < 6; ray++) {
+      const rsx = ((ray*180+60 - sx*0.1+1000)%(W+200))-100;
+      const grad = ctx.createLinearGradient(rsx,0,rsx+40,H*0.8);
+      grad.addColorStop(0,'rgba(100,200,255,0.15)');
+      grad.addColorStop(1,'rgba(100,200,255,0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(rsx,0); ctx.lineTo(rsx+60,0);
+      ctx.lineTo(rsx+80,H*0.8); ctx.lineTo(rsx-20,H*0.8);
+      ctx.fill();
+    }
+
+    // Far ruins / columns
+    for (let c = 0; c < 6; c++) {
+      const cx = ((c*180+40 - sx*0.2+2000)%(W+200))-100;
+      ctx.fillStyle = '#1a4a6a';
+      ctx.fillRect(cx, H*0.2, 30, H*0.5);
+      // broken top
+      ctx.fillStyle = '#0d3050';
+      ctx.fillRect(cx-6, H*0.2, 42, 16);
+      // vine-like streaks
+      ctx.strokeStyle = 'rgba(0,200,100,0.3)'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(cx+5, H*0.25);
+      ctx.quadraticCurveTo(cx+20, H*0.4, cx+10, H*0.6); ctx.stroke();
+    }
+
+    // Water surface ripples at top
+    ctx.strokeStyle = 'rgba(150,220,255,0.4)'; ctx.lineWidth = 2;
+    for (let wave = 0; wave < 5; wave++) {
+      const wx = ((wave*220 - sx*0.3 + t*0.8 + 500)%(W+200))-100;
+      ctx.beginPath();
+      ctx.arc(wx, 8, 30+wave*10, 0, Math.PI); ctx.stroke();
+    }
+
+    // Ground — sandy seabed
+    const sand = ctx.createLinearGradient(0,H*0.72,0,H);
+    sand.addColorStop(0,'#1a5520'); sand.addColorStop(1,'#0d3318');
+    ctx.fillStyle = sand; ctx.fillRect(0,H*0.72,W,H*0.28);
+
+    // Seaweed
+    for (let sw = 0; sw < 10; sw++) {
+      const swx = ((sw*110+50 - sx*0.9+1500)%(W+150))-75;
+      ctx.strokeStyle = '#00aa44'; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.moveTo(swx, H*0.72);
+      ctx.quadraticCurveTo(swx+Math.sin(t*0.05+sw)*15, H*0.58, swx+Math.sin(t*0.05+sw)*8, H*0.48);
+      ctx.stroke();
+    }
+
+    // Bubbles floating up
+    for (let b = 0; b < 12; b++) {
+      const bx = ((b*90+30 - sx*0.2+500)%(W+100))-50;
+      const by = ((t*0.6+b*80)%(H+50))-25;
+      ctx.strokeStyle = 'rgba(150,220,255,0.6)'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(bx, H-by, 4+b%3, 0, Math.PI*2); ctx.stroke();
+    }
+
+    // Rings (underwater shimmer)
+    for (let r = 0; r < 4; r++) {
+      const rx = ((r*200+90 - sx*0.85+1800)%(W+200))-100;
+      const ry = H*0.55 + Math.sin(t*0.05+r)*20;
+      ctx.save();
+      ctx.globalAlpha = 0.85;
+      drawRing(ctx, rx, ry, 13, t+r*42);
+      ctx.restore();
+    }
+
+    // Stone blocks on ground
+    for (let bl = 0; bl < 8; bl++) {
+      const blx = ((bl*130+20 - sx*0.95+2000)%(W+160))-80;
+      const bly = H*0.68;
+      ctx.fillStyle = '#1a4a5a';
+      ctx.fillRect(blx, bly, 50, 22);
+      ctx.fillStyle = 'rgba(255,255,255,0.08)';
+      ctx.fillRect(blx, bly, 50, 4);
+      ctx.fillStyle = 'rgba(0,0,0,0.2)';
+      ctx.fillRect(blx, bly+18, 50, 4);
+    }
+  }
+
+  // ── SCENE 7: SKY CHASE ZONE ──────────────────────────────
+  function drawSkyChase(ctx, W, H, t, sx) {
+    // Sunset sky
+    const sky = ctx.createLinearGradient(0,0,0,H);
+    sky.addColorStop(0,'#1a0050');
+    sky.addColorStop(0.3,'#6600cc');
+    sky.addColorStop(0.6,'#ff6600');
+    sky.addColorStop(0.85,'#ffaa00');
+    sky.addColorStop(1,'#ffdd88');
+    ctx.fillStyle = sky; ctx.fillRect(0,0,W,H);
+
+    // Stars at top
+    for (let s = 0; s < 20; s++) {
+      const stx = (s*97+s*17)%W;
+      const sty = (s*31)%(H*0.25);
+      ctx.fillStyle = `rgba(255,255,255,${0.4+s%3*0.2})`;
+      ctx.beginPath(); ctx.arc(stx,sty,1,0,Math.PI*2); ctx.fill();
+    }
+
+    // Far clouds (purple-tinted)
+    for (let c = 0; c < 5; c++) {
+      const cx = ((c*240+80 - sx*0.15+2000)%(W+300))-150;
+      const cy = H*(0.2+c%2*0.1);
+      const r  = 50+c*15;
+      ctx.fillStyle = 'rgba(180,100,255,0.25)';
+      ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
+      ctx.arc(cx+r*0.9,cy-r*0.2,r*0.7,0,Math.PI*2);
+      ctx.arc(cx-r*0.7,cy-r*0.15,r*0.6,0,Math.PI*2); ctx.fill();
+    }
+
+    // Speed clouds (streaking horizontal)
+    ctx.fillStyle = 'rgba(255,200,255,0.18)';
+    for (let sc = 0; sc < 6; sc++) {
+      const scx = ((sc*190+50 - sx*1.2+1500)%(W+200))-100;
+      const scy = H*(0.3+sc%3*0.08);
+      ctx.fillRect(scx, scy, 120+sc*20, 10+sc%3*6);
+    }
+
+    // Wing of Tornado — propellor plane wing
+    const wingX = W*0.5;
+    const wingY = H*0.65;
+    // Fuselage
+    ctx.fillStyle = '#aaaaff';
+    ctx.fillRect(wingX-80, wingY-12, 160, 24);
+    // Wings
+    ctx.fillStyle = '#8888dd';
+    ctx.beginPath();
+    ctx.moveTo(wingX-20, wingY-12);
+    ctx.lineTo(wingX-20, wingY-50);
+    ctx.lineTo(wingX+20, wingY-40);
+    ctx.lineTo(wingX+20, wingY-12);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(wingX-20, wingY+12);
+    ctx.lineTo(wingX-20, wingY+50);
+    ctx.lineTo(wingX+20, wingY+40);
+    ctx.lineTo(wingX+20, wingY+12);
+    ctx.fill();
+    // Propellor spin
+    const propA = t*0.25;
+    ctx.strokeStyle = '#ccccff'; ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(wingX+85+Math.cos(propA)*30, wingY+Math.sin(propA)*30);
+    ctx.lineTo(wingX+85+Math.cos(propA+Math.PI)*30, wingY+Math.sin(propA+Math.PI)*30);
+    ctx.stroke();
+
+    // Rings floating in sky
+    for (let r = 0; r < 5; r++) {
+      const rx = ((r*170+60 - sx*0.8+1500)%(W+200))-100;
+      const ry = H*(0.35+r%3*0.08) + Math.sin(t*0.05+r)*12;
+      drawRing(ctx, rx, ry, 12, t+r*38);
+    }
+  }
+
+  // ── SCENE 8: MYSTIC CAVE ZONE ────────────────────────────
+  function drawMysticCave(ctx, W, H, t, sx) {
+    // Very dark cave bg
+    ctx.fillStyle = '#050008'; ctx.fillRect(0,0,W,H);
+
+    // Cave walls top — stalactites
+    ctx.fillStyle = '#1a0030';
+    for (let s = 0; s < 14; s++) {
+      const stx = ((s*90+20 - sx*0.1+1000)%(W+120))-60;
+      const sth = 30+s%4*20;
+      ctx.beginPath();
+      ctx.moveTo(stx-20,0); ctx.lineTo(stx+20,0); ctx.lineTo(stx,sth);
+      ctx.fill();
+    }
+
+    // Glowing crystal formations
+    const crystalColors = ['#ff00ff','#00ffcc','#aa00ff','#0088ff','#ff0088'];
+    for (let c = 0; c < 8; c++) {
+      const cx = ((c*140+30 - sx*0.3+1500)%(W+160))-80;
+      const cBase = H*0.72;
+      const ch = 30+c%3*20;
+      const cc = crystalColors[c%5];
+      const glow = ctx.createRadialGradient(cx,cBase-ch/2,0,cx,cBase-ch/2,40);
+      glow.addColorStop(0,cc.replace(')',',0.3)').replace('rgb','rgba'));
+      glow.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(cx-40,cBase-ch-40,80,80);
+      // crystal shape
+      ctx.fillStyle = cc;
+      ctx.beginPath();
+      ctx.moveTo(cx,cBase-ch); ctx.lineTo(cx-8,cBase); ctx.lineTo(cx+8,cBase); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.beginPath();
+      ctx.moveTo(cx,cBase-ch); ctx.lineTo(cx-3,cBase); ctx.lineTo(cx+1,cBase); ctx.fill();
+    }
+
+    // Cave ground
+    ctx.fillStyle = '#0d001a'; ctx.fillRect(0,H*0.72,W,H*0.28);
+    ctx.fillStyle = '#1a0030'; ctx.fillRect(0,H*0.72,W,6);
+
+    // Purple/pink fog wisps
+    for (let fog = 0; fog < 5; fog++) {
+      const fx = ((fog*200+50 - sx*0.4 + t*0.3 + 600)%(W+300))-150;
+      const fy = H*0.65;
+      const fGrad = ctx.createRadialGradient(fx,fy,0,fx,fy,60);
+      fGrad.addColorStop(0,'rgba(180,0,255,0.12)');
+      fGrad.addColorStop(1,'rgba(180,0,255,0)');
+      ctx.fillStyle = fGrad;
+      ctx.beginPath(); ctx.ellipse(fx,fy,70,30,0,0,Math.PI*2); ctx.fill();
+    }
+
+    // Fireflies / sparks floating
+    for (let ff = 0; ff < 15; ff++) {
+      const ffx = ((ff*83+40 - sx*0.5+1000)%(W+100))-50;
+      const ffy = H*(0.3+ff%4*0.1) + Math.sin(t*0.07+ff)*20;
+      const ffbright = Math.sin(t*0.15+ff*1.3)*0.5+0.5;
+      ctx.fillStyle = `rgba(200,100,255,${ffbright*0.8})`;
+      ctx.beginPath(); ctx.arc(ffx,ffy,2+ffbright,0,Math.PI*2); ctx.fill();
+    }
+
+    // Glowing rings
+    for (let r = 0; r < 4; r++) {
+      const rx = ((r*190+70 - sx*0.85+1800)%(W+200))-100;
+      const ry = H*0.58 + Math.sin(t*0.045+r)*14;
+      ctx.save();
+      ctx.shadowColor = '#ffd700'; ctx.shadowBlur = 16;
+      drawRing(ctx, rx, ry, 13, t+r*50);
+      ctx.restore();
     }
   }
 
