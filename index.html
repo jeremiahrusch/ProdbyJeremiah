@@ -1155,10 +1155,6 @@ function showToast(msg, error=false) {
       blk(SOLE, (f%2===0?2:1), 10+fr.rly+fr.roff, 3, 1);
     }
 
-    const kidX = ((t * 2.5 - sx * 0.95 + 800) % (W + 250)) - 125;
-    const kidY = H * 0.585;
-    drawPixelKid(4, kidX, kidY, t);
-
     // Kewan Lacy running through Green Hill
     const lacyX1 = ((t * 3.2 - sx * 0.95 + 400) % (W + 300)) - 150;
     for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
