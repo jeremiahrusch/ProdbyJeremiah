@@ -530,52 +530,6 @@ textarea { resize: vertical; min-height: 80px; }
 }
 .empty-state p { color: var(--muted); font-size: 13px; }
 
-/* ── UPLOAD PANEL ───────────────────────────────────────── */
-.upload-wrap {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-top: 3px solid var(--gold);
-  position: relative; z-index: 1;
-}
-.upload-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-@media(max-width:600px) { .upload-grid { grid-template-columns: 1fr; } }
-
-.field { display: flex; flex-direction: column; gap: 6px; }
-.field.full { grid-column: 1 / -1; }
-label {
-  font-size: 11px; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--blue-bright);
-}
-
-.file-drop {
-  border: 1px dashed var(--muted2);
-  border-bottom: 2px dashed var(--blue-mid);
-  padding: 2.5rem;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  background: var(--bg);
-}
-.file-drop:hover, .file-drop.over {
-  border-color: var(--gold);
-  background: var(--gold-dim);
-}
-.file-drop-icon { font-size: 2rem; margin-bottom: 0.75rem; color: var(--muted); }
-.file-drop p { color: var(--muted); font-size: 12px; }
-.file-drop strong { color: var(--white); }
-.file-name { color: var(--gold); font-size: 13px; margin-top: 8px; }
-
-.upload-progress { display: none; }
-.upload-progress.show { display: block; margin-top: 1.5rem; }
-.progress-label { font-size: 12px; color: var(--blue-bright); letter-spacing: 0.1em; text-transform: uppercase; }
-.progress-bar-wrap { height: 4px; background: var(--border); margin: 8px 0; }
-.progress-bar { height: 100%; background: linear-gradient(90deg, var(--blue-mid), var(--gold)); width: 0%; transition: width 0.3s; }
-
 /* ── TOAST ──────────────────────────────────────────────── */
 .toast {
   position: fixed; bottom: 2rem; right: 2rem;
@@ -652,49 +606,6 @@ footer {
   letter-spacing: 0.1em;
 }
 
-/* ── ADMIN LOCK ─────────────────────────────────────────── */
-.upload-wrap { display: none; }
-.upload-wrap.unlocked { display: block; }
-
-.admin-login-wrap {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-top: 3px solid var(--blue-mid);
-  position: relative; z-index: 1;
-}
-.admin-login-wrap section { padding: 3rem 2rem; }
-
-.lock-icon { font-size: 3rem; text-align: center; margin-bottom: 1rem; }
-.lock-label {
-  text-align: center;
-  font-family: var(--font-display);
-  font-size: 1.6rem;
-  text-transform: uppercase;
-  color: var(--white);
-  margin-bottom: 0.5rem;
-  letter-spacing: 0.05em;
-}
-.lock-sub {
-  text-align: center;
-  color: var(--muted);
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  margin-bottom: 2rem;
-}
-.lock-form { display: flex; gap: 8px; max-width: 420px; margin: 0 auto; }
-.lock-form input { flex: 1; letter-spacing: 0.12em; }
-
-.nav-lock-btn {
-  font-family: var(--font-mono);
-  font-size: 12px; letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  background: transparent; border: none; cursor: pointer;
-  transition: color 0.2s;
-  text-decoration: none;
-}
-.nav-lock-btn:hover { color: var(--red); }
-
 /* ── RESPONSIVE ─────────────────────────────────────────── */
 @media(max-width:768px) {
   .hero h1 { font-size: 3.5rem; }
@@ -717,9 +628,7 @@ footer {
   </a>
   <div class="nav-links">
     <a href="#packs">Packs</a>
-    <a href="#upload" id="nav-upload-link" style="display:none">Upload</a>
     <a href="#about">Info</a>
-    <button class="nav-lock-btn" id="nav-lock-btn" onclick="showAdminSection()">&#128274;</button>
     <div class="rings-hud" id="rings-hud">0 RINGS</div>
   </div>
 </nav>
@@ -785,75 +694,6 @@ footer {
   <div class="packs-grid" id="packs-grid"></div>
 </section>
 
-<!-- ADD PACK PANEL -->
-<div class="upload-wrap" id="upload">
-  <section>
-    <div class="section-header">
-      <h2 class="section-title">Add a <span class="accent">Pack</span></h2>
-    </div>
-
-    <div style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--gold);padding:1rem 1.25rem;margin-bottom:2rem;font-size:12px;color:var(--muted);line-height:1.8;">
-      ▶ Upload your ZIP to <strong style="color:var(--white)">Google Drive</strong> → right-click → Share → <em>Anyone with link</em> → copy the link and paste below.<br>
-      ▶ This tool generates the JSON entry. Copy it into <strong style="color:var(--white)">packs.json</strong> on GitHub → Netlify deploys in ~30 seconds.
-    </div>
-
-    <div class="upload-grid">
-      <div class="field">
-        <label>Pack Name *</label>
-        <input type="text" id="pack-name" placeholder="e.g. Dark Trap Vol. 2" maxlength="60">
-      </div>
-      <div class="field">
-        <label>Producer / Artist</label>
-        <input type="text" id="pack-artist" placeholder="Your name or alias" maxlength="40">
-      </div>
-      <div class="field">
-        <label>Genre *</label>
-        <select id="pack-genre">
-          <option value="">— Select genre —</option>
-          <option>Trap</option><option>R&B</option><option>Underground</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>BPM Range</label>
-        <input type="text" id="pack-bpm" placeholder="e.g. 140 or 80–95">
-      </div>
-      <div class="field full">
-        <label>Description</label>
-        <textarea id="pack-desc" placeholder="What's inside? What makes it special?"></textarea>
-      </div>
-      <div class="field full">
-        <label>Google Drive / Dropbox Download Link *</label>
-        <input type="text" id="pack-file-link" placeholder="https://drive.google.com/file/d/…/view?usp=sharing">
-      </div>
-      <div class="field full">
-        <label>Cover Art Link (optional — any public image URL)</label>
-        <input type="text" id="pack-cover-link" placeholder="https://drive.google.com/file/d/…/view or direct image URL">
-      </div>
-    </div>
-
-    <button class="btn btn-primary" id="upload-btn" style="width:100%;margin-top:0.5rem;padding:16px;font-size:14px;">
-      ⚙ &nbsp;Generate packs.json Entry
-    </button>
-
-    <!-- JSON OUTPUT -->
-    <div id="json-output-wrap" style="display:none;margin-top:2rem;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
-        <label style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);">
-          ▶ Copy this into packs.json on GitHub
-        </label>
-        <button class="btn btn-ghost" onclick="copyJson()" style="padding:6px 16px;font-size:11px;flex:0;">Copy</button>
-      </div>
-      <pre id="json-output" style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--blue-mid);padding:1.25rem;font-family:var(--font-mono);font-size:12px;color:var(--white);overflow-x:auto;white-space:pre-wrap;line-height:1.7;"></pre>
-      <div style="margin-top:1rem;font-size:12px;color:var(--muted);line-height:1.9;">
-        1. Go to your GitHub repo → open <strong style="color:var(--white)">packs.json</strong><br>
-        2. Click the ✏️ pencil (edit) icon<br>
-        3. Add a comma after the last <code style="color:var(--blue-bright)">}</code> entry, then paste this block<br>
-        4. Click <strong style="color:var(--white)">Commit changes</strong> → Netlify deploys automatically ✓
-      </div>
-    </div>
-  </section>
-</div>
-
 <!-- ABOUT -->
 <section id="about" style="border-top:1px solid var(--border);">
   <div class="section-header">
@@ -864,17 +704,6 @@ footer {
     <p>Want something custom? Email <a href="mailto:jeremiah.rusch@gmail.com" style="color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,215,0,0.3);transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='rgba(255,215,0,0.3)'">jeremiah.rusch@gmail.com</a> for custom beat inquiries.</p>
   </div>
 </section>
-
-<!-- ADMIN LOGIN — small, bottom of page -->
-<div id="admin-login-wrap" style="border-top:1px solid var(--border);padding:2rem 2rem 0;max-width:1100px;margin:0 auto;position:relative;z-index:1;">
-  <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
-    <span style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted2);">&#128274; Producer Access</span>
-    <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password"
-      onkeydown="if(event.key==='Enter')tryUnlock()"
-      style="max-width:200px;padding:7px 12px;font-size:12px;background:var(--surface);border:1px solid var(--muted2);border-bottom:2px solid var(--muted2);color:var(--muted);font-family:var(--font-mono);outline:none;">
-    <button onclick="tryUnlock()" style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;padding:7px 16px;background:transparent;border:1px solid var(--muted2);color:var(--muted);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--muted2)';this.style.color='var(--muted)'">Unlock</button>
-  </div>
-</div>
 
 <!-- FOOTER -->
 <div class="checker-floor-bottom"></div>
@@ -902,58 +731,6 @@ footer {
 
 
 <script>
-// ── ADMIN AUTH ────────────────────────────────────────────────
-const ADMIN_PASSWORD    = 'ProdbyJeremiah';
-const ADMIN_SESSION_KEY = 'pbj_admin_session';
-
-function isUnlocked() { return sessionStorage.getItem(ADMIN_SESSION_KEY) === '1'; }
-
-function tryUnlock() {
-  const pw = document.getElementById('admin-password').value;
-  if (pw === ADMIN_PASSWORD) {
-    sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
-    applyAdminState();
-    showToast('&#128275; Producer mode unlocked!');
-    document.getElementById('upload').scrollIntoView({ behavior: 'smooth' });
-  } else {
-    showToast('Wrong password', true);
-    document.getElementById('admin-password').value = '';
-    document.getElementById('admin-password').focus();
-  }
-}
-
-function logout() {
-  sessionStorage.removeItem(ADMIN_SESSION_KEY);
-  applyAdminState();
-  showToast('Locked');
-}
-
-function showAdminSection() {
-  if (isUnlocked()) {
-    document.getElementById('upload').scrollIntoView({ behavior: 'smooth' });
-  } else {
-    document.getElementById('admin-login-wrap').scrollIntoView({ behavior: 'smooth' });
-    setTimeout(() => document.getElementById('admin-password').focus(), 400);
-  }
-}
-
-function applyAdminState() {
-  const unlocked = isUnlocked();
-  const loginWrap = document.getElementById('admin-login-wrap');
-  if (loginWrap) loginWrap.style.display = unlocked ? 'none' : 'block';
-  document.getElementById('upload').classList.toggle('unlocked', unlocked);
-  document.getElementById('nav-upload-link').style.display = unlocked ? 'inline' : 'none';
-  const lockBtn = document.getElementById('nav-lock-btn');
-  if (unlocked) {
-    lockBtn.innerHTML = '&#128275; Logout';
-    lockBtn.onclick = logout;
-  } else {
-    lockBtn.innerHTML = '&#128274;';
-    lockBtn.onclick = showAdminSection;
-  }
-  renderPacks(); // re-render to show/hide delete buttons
-}
-
 // ── STATE ─────────────────────────────────────────────────────
 let packs        = [];
 let activeGenre  = 'all';
@@ -1133,52 +910,6 @@ document.getElementById('dl-modal').addEventListener('click', e => {
   if (e.target === e.currentTarget) e.currentTarget.classList.remove('show');
 });
 
-// ── UPLOAD PANEL: generates packs.json entry for you ─────────
-// (No actual file upload — just builds the JSON snippet to paste into GitHub)
-document.getElementById('upload-btn').addEventListener('click', () => {
-  const name   = document.getElementById('pack-name').value.trim();
-  const genre  = document.getElementById('pack-genre').value;
-  const artist = document.getElementById('pack-artist').value.trim();
-  const bpm    = document.getElementById('pack-bpm').value.trim();
-  const desc   = document.getElementById('pack-desc').value.trim();
-  const fileLink  = document.getElementById('pack-file-link').value.trim();
-  const coverLink = document.getElementById('pack-cover-link').value.trim();
-
-  if (!name)  { showToast('Add a pack name', true); return; }
-  if (!genre) { showToast('Select a genre', true);  return; }
-
-  const id = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-
-  const entry = {
-    id,
-    name,
-    artist,
-    genre,
-    bpm,
-    desc,
-    cover: coverLink || null,
-    file:  fileLink  || null
-  };
-
-  const snippet = JSON.stringify(entry, null, 2);
-
-  // Show it in a copyable box
-  document.getElementById('json-output-wrap').style.display = 'block';
-  document.getElementById('json-output').textContent = snippet;
-  document.getElementById('json-output-wrap').scrollIntoView({ behavior: 'smooth' });
-  showToast('JSON entry ready — copy it into packs.json on GitHub!');
-});
-
-// ── COPY JSON ─────────────────────────────────────────────────
-function copyJson() {
-  const text = document.getElementById('json-output').textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    showToast('Copied! Now paste it into packs.json on GitHub');
-  }).catch(() => {
-    showToast('Select the text above and copy manually', true);
-  });
-}
-
 // ── FILTER / SEARCH ───────────────────────────────────────────
 document.querySelectorAll('.pill').forEach(pill => {
   pill.addEventListener('click', () => {
@@ -1207,7 +938,6 @@ function showToast(msg, error=false) {
 (async () => {
   packs = await loadPacks();
   renderPacks();
-  applyAdminState();
 })();
 
 // ── SONIC SCENE CANVAS ────────────────────────────────────
