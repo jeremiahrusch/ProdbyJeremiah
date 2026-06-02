@@ -1829,26 +1829,28 @@ function showToast(msg, error=false) {
   // ── PIXEL ROCKET ──────────────────────────────────────
   function drawPixelRocket(ctx, rx, ry, t) {
     const fl = Math.sin(t * 0.35) * 0.4 + 0.6;
-    // Nose cone (left = direction of travel)
-    ctx.fillStyle = '#cc2200';
+    // Nose cone — classic Sonic yellow
+    ctx.fillStyle = '#FFD700';
     ctx.fillRect(rx, ry + 2, 10, 10);
     ctx.fillRect(rx - 5, ry + 4, 5, 6);
     ctx.fillRect(rx - 8, ry + 5, 3, 4);
-    // Body
-    ctx.fillStyle = '#aaaaaa';
+    // Body — classic Sonic red
+    ctx.fillStyle = '#DD1100';
     ctx.fillRect(rx + 10, ry, 28, 14);
-    // Top stripe
-    ctx.fillStyle = '#2979C8';
-    ctx.fillRect(rx + 10, ry, 28, 4);
-    // Fins (right side = back)
-    ctx.fillStyle = '#888888';
+    // Dark red shadow stripe
+    ctx.fillStyle = '#AA0000';
+    ctx.fillRect(rx + 10, ry + 10, 28, 4);
+    // White highlight stripe
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(rx + 10, ry, 28, 3);
+    // Fins — yellow
+    ctx.fillStyle = '#FFD700';
     ctx.fillRect(rx + 38, ry - 5, 6, 10);
     ctx.fillRect(rx + 38, ry + 9, 6, 10);
-    // Window
-    ctx.fillStyle = '#88ccff';
-    ctx.fillRect(rx + 16, ry + 4, 8, 6);
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.fillRect(rx + 17, ry + 5, 3, 2);
+    // Rivet dots
+    ctx.fillStyle = '#880000';
+    ctx.fillRect(rx + 14, ry + 5, 3, 3);
+    ctx.fillRect(rx + 22, ry + 5, 3, 3);
     // Flame trail (right = back)
     ctx.fillStyle = `rgba(255,${Math.floor(80+fl*160)},0,0.85)`;
     ctx.fillRect(rx + 38, ry + 3, 18, 8);
