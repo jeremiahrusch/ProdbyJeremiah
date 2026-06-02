@@ -1158,6 +1158,10 @@ function showToast(msg, error=false) {
     const kidX = ((t * 2.5 - sx * 0.95 + 800) % (W + 250)) - 125;
     const kidY = H * 0.585;
     drawPixelKid(4, kidX, kidY, t);
+
+    // Kewan Lacy running through Green Hill
+    const lacyX1 = ((t * 3.2 - sx * 0.95 + 400) % (W + 300)) - 150;
+    drawKewanLacy(ctx, lacyX1, H * 0.565, t);
   }
 
   // ── SCENE 2: CHEMICAL PLANT ──────────────────────────
@@ -1247,6 +1251,8 @@ function showToast(msg, error=false) {
         ctx.fill();
       }
     }
+    const lacyX2 = ((t * 3.2 - sx * 0.85 + 500) % (W + 300)) - 150;
+    drawKewanLacy(ctx, lacyX2, H * 0.655, t);
   }
 
   // ── SCENE 3: STAR LIGHT ZONE ─────────────────────────
@@ -1363,6 +1369,8 @@ function showToast(msg, error=false) {
       ctx.fillStyle = grd;
       ctx.beginPath(); ctx.arc(lx,ly,60,0,Math.PI*2); ctx.fill();
     }
+    const lacyX3 = ((t * 3.2 - sx * 0.9 + 600) % (W + 300)) - 150;
+    drawKewanLacy(ctx, lacyX3, H * 0.71, t);
   }
 
   // ── SCENE 4: MARBLE ZONE ─────────────────────────────
@@ -1487,6 +1495,8 @@ function showToast(msg, error=false) {
       const ry = H*0.55 + Math.sin(t*0.045+r)*16;
       drawRing(ctx, rx, ry, 13, t+r*45);
     }
+    const lacyX4 = ((t * 3.2 - sx * 0.9 + 300) % (W + 300)) - 150;
+    drawKewanLacy(ctx, lacyX4, H * 0.61, t);
   }
 
 
@@ -1568,6 +1578,8 @@ function showToast(msg, error=false) {
       ctx.font = `bold ${Math.floor(22+pulse*4)}px monospace`;
       ctx.fillText('7 7 7', nsx, H*0.5);
     }
+    const lacyX5 = ((t * 3.2 - sx * 0.9 + 700) % (W + 300)) - 150;
+    drawKewanLacy(ctx, lacyX5, H * 0.71, t);
   }
 
   // ── SCENE 6: AQUATIC RUIN ZONE ───────────────────────────
@@ -1657,6 +1669,8 @@ function showToast(msg, error=false) {
       ctx.fillStyle = 'rgba(0,0,0,0.2)';
       ctx.fillRect(blx, bly+18, 50, 4);
     }
+    const lacyX6 = ((t * 3.2 - sx * 0.9 + 450) % (W + 300)) - 150;
+    drawKewanLacy(ctx, lacyX6, H * 0.665, t);
   }
 
   // ── SCENE 7: SKY CHASE ZONE ──────────────────────────────
@@ -1731,6 +1745,8 @@ function showToast(msg, error=false) {
       const ry = H*(0.35+r%3*0.08) + Math.sin(t*0.05+r)*12;
       drawRing(ctx, rx, ry, 12, t+r*38);
     }
+    const lacyX7 = ((t * 3.2 - sx * 0.9 + 550) % (W + 300)) - 150;
+    drawKewanLacy(ctx, lacyX7, H * 0.61, t);
   }
 
   // ── SCENE 8: MYSTIC CAVE ZONE ────────────────────────────
@@ -1802,6 +1818,80 @@ function showToast(msg, error=false) {
       drawRing(ctx, rx, ry, 13, t+r*50);
       ctx.restore();
     }
+    const lacyX8 = ((t * 3.2 - sx * 0.9 + 350) % (W + 300)) - 150;
+    drawKewanLacy(ctx, lacyX8, H * 0.665, t);
+  }
+
+  // ── KEWAN LACY PIXEL PLAYER ───────────────────────────
+  function drawKewanLacy(ctx, x, y, t) {
+    const p = 4; // pixel size
+    const f = Math.floor(t * 0.2) % 4;
+    function blk(col, dx, dy, w, h) {
+      ctx.fillStyle = col;
+      ctx.fillRect(x + dx*p, y + dy*p, (w||1)*p, (h||1)*p);
+    }
+    const SKIN='#6B3322', BLUE='#A8D4F0', WHITE='#ffffff', DARK='#111111';
+    const CLEAT='#222222', CLEAT2='#444444', GOLD='#D4A017', FACEMASK='#ccddee';
+
+    const frames = [
+      {lly:0,rly:2,loff:1,roff:0},
+      {lly:1,rly:1,loff:0,roff:0},
+      {lly:2,rly:0,loff:0,roff:1},
+      {lly:1,rly:1,loff:0,roff:0},
+    ];
+    const fr = frames[f];
+
+    // Speed lines
+    ctx.strokeStyle = 'rgba(168,212,240,0.5)'; ctx.lineWidth = 2;
+    for (let sl = 0; sl < 4; sl++) {
+      ctx.beginPath();
+      ctx.moveTo(x - 10*p - sl*5, y + sl*3*p);
+      ctx.lineTo(x - 2*p, y + sl*3*p);
+      ctx.stroke();
+    }
+
+    // Helmet (powder blue, rounded top)
+    blk(BLUE, 0, -7, 4, 5);
+    blk(BLUE, -1, -6, 6, 3); // wider mid
+    // White stripe on helmet
+    blk(WHITE, 1, -7, 2, 5);
+    // Facemask
+    blk(FACEMASK, -1, -4, 1, 3);
+    blk(FACEMASK, 4, -4, 1, 3);
+    blk(FACEMASK, -1, -4, 6, 1);
+    blk(FACEMASK, -1, -2, 6, 1);
+    // Eyes visible through facemask
+    blk(WHITE, 1, -5, 1, 1); blk(WHITE, 2, -5, 1, 1);
+    blk(DARK,  1, -5, 1, 1); blk(DARK,  2, -5, 1, 1);
+    // Neck
+    blk(SKIN, 1, -2, 2, 1);
+    // Jersey (powder blue) - back arm
+    blk(SKIN, -1, 0 + (f%2), 1, 2);
+    // Torso
+    blk(BLUE, 0, -1, 4, 4);
+    // Jersey number "2"
+    blk(WHITE, 1, 0, 2, 1);
+    blk(WHITE, 2, 1, 1, 1);
+    blk(WHITE, 1, 2, 2, 1);
+    blk(WHITE, 0, 3, 1, 1);
+    blk(WHITE, 0, 3, 2, 1);
+    // Front arm swinging
+    blk(SKIN, 4, 0 + (1-f%2), 1, 2);
+    // Shoulder pads bump
+    blk(BLUE, -1, -1, 6, 1);
+    // Pants (powder blue)
+    blk(BLUE, 0, 3, 4, 3);
+    // Gold stripe on pants
+    blk(GOLD, 0, 4, 1, 2);
+    blk(GOLD, 3, 4, 1, 2);
+    // Left leg
+    blk(SKIN, 0, 6+fr.lly, 2, 2);
+    blk(CLEAT, (f%2===0?-1:0), 8+fr.lly+fr.loff, 3, 1);
+    blk(CLEAT2,(f%2===0?-1:0), 9+fr.lly+fr.loff, 3, 1);
+    // Right leg
+    blk(SKIN, 2, 6+fr.rly, 2, 2);
+    blk(CLEAT, (f%2===0?2:1), 8+fr.rly+fr.roff, 3, 1);
+    blk(CLEAT2,(f%2===0?2:1), 9+fr.rly+fr.roff, 3, 1);
   }
 
   // ── RING DRAWING ──────────────────────────────────────
