@@ -1824,14 +1824,14 @@ function showToast(msg, error=false) {
 
   // ── KEWAN LACY PIXEL PLAYER ───────────────────────────
   function drawKewanLacy(ctx, x, y, t) {
-    const p = 4; // pixel size
+    const p = 4;
     const f = Math.floor(t * 0.2) % 4;
     function blk(col, dx, dy, w, h) {
       ctx.fillStyle = col;
       ctx.fillRect(x + dx*p, y + dy*p, (w||1)*p, (h||1)*p);
     }
-    const SKIN='#6B3322', BLUE='#A8D4F0', WHITE='#ffffff', DARK='#111111';
-    const CLEAT='#222222', CLEAT2='#444444', GOLD='#D4A017', FACEMASK='#ccddee';
+    const SKIN='#6B3322', BLUE='#2979C8', BLUE2='#1A5FAA', WHITE='#ffffff', DARK='#111111';
+    const CLEAT='#111111', CLEAT2='#333333', GOLD='#D4A017', MASK='#aabbcc', RED='#CC2200';
 
     const frames = [
       {lly:0,rly:2,loff:1,roff:0},
@@ -1841,57 +1841,69 @@ function showToast(msg, error=false) {
     ];
     const fr = frames[f];
 
-    // Speed lines
-    ctx.strokeStyle = 'rgba(168,212,240,0.5)'; ctx.lineWidth = 2;
-    for (let sl = 0; sl < 4; sl++) {
+    // Speed lines (blue tint)
+    ctx.strokeStyle = 'rgba(41,121,200,0.45)'; ctx.lineWidth = 2;
+    for (let sl = 0; sl < 5; sl++) {
       ctx.beginPath();
-      ctx.moveTo(x - 10*p - sl*5, y + sl*3*p);
-      ctx.lineTo(x - 2*p, y + sl*3*p);
+      ctx.moveTo(x - 12*p - sl*4, y - 2*p + sl*4*p);
+      ctx.lineTo(x - 1*p, y - 2*p + sl*4*p);
       ctx.stroke();
     }
 
-    // Helmet (powder blue, rounded top)
-    blk(BLUE, 0, -7, 4, 5);
-    blk(BLUE, -1, -6, 6, 3); // wider mid
-    // White stripe on helmet
-    blk(WHITE, 1, -7, 2, 5);
-    // Facemask
-    blk(FACEMASK, -1, -4, 1, 3);
-    blk(FACEMASK, 4, -4, 1, 3);
-    blk(FACEMASK, -1, -4, 6, 1);
-    blk(FACEMASK, -1, -2, 6, 1);
-    // Eyes visible through facemask
-    blk(WHITE, 1, -5, 1, 1); blk(WHITE, 2, -5, 1, 1);
-    blk(DARK,  1, -5, 1, 1); blk(DARK,  2, -5, 1, 1);
+    // ── HELMET (side profile, facing right) ──
+    // Back dome
+    blk(BLUE, -1, -8, 1, 1);
+    blk(BLUE, -2, -7, 1, 4);
+    blk(BLUE, -1, -8, 5, 1); // top
+    blk(BLUE, -1, -7, 6, 4); // dome body
+    blk(BLUE,  0, -3, 5, 1); // chin curve
+    // White mohawk stripe down center-top
+    blk(WHITE, 1, -8, 2, 5);
+    // Helmet shadow/depth
+    blk(BLUE2, -2, -6, 1, 3);
+    // Facemask (side profile bars extending right)
+    blk(MASK, 4, -6, 3, 1);  // top bar
+    blk(MASK, 6, -6, 1, 4);  // vertical bar
+    blk(MASK, 4, -3, 3, 1);  // bottom bar
+    blk(MASK, 4, -5, 1, 3);  // inner vertical
+    // Eye (visible through facemask gap)
+    blk(WHITE, 3, -6, 1, 1);
+    blk(DARK,  3, -6, 1, 1);
+    // Ole Miss logo suggestion (red M)
+    blk(RED, 0, -7, 1, 1);
+    // Chin strap
+    blk(MASK, 0, -3, 4, 1);
+    blk(DARK, 1, -3, 2, 1);
+
+    // ── BODY ──
     // Neck
     blk(SKIN, 1, -2, 2, 1);
-    // Jersey (powder blue) - back arm
-    blk(SKIN, -1, 0 + (f%2), 1, 2);
-    // Torso
-    blk(BLUE, 0, -1, 4, 4);
-    // Jersey number "2"
-    blk(WHITE, 1, 0, 2, 1);
-    blk(WHITE, 2, 1, 1, 1);
-    blk(WHITE, 1, 2, 2, 1);
-    blk(WHITE, 0, 3, 1, 1);
-    blk(WHITE, 0, 3, 2, 1);
-    // Front arm swinging
-    blk(SKIN, 4, 0 + (1-f%2), 1, 2);
-    // Shoulder pads bump
-    blk(BLUE, -1, -1, 6, 1);
-    // Pants (powder blue)
-    blk(BLUE, 0, 3, 4, 3);
-    // Gold stripe on pants
-    blk(GOLD, 0, 4, 1, 2);
-    blk(GOLD, 3, 4, 1, 2);
-    // Left leg
+    // Shoulder pads
+    blk(BLUE, -1, -1, 7, 1);
+    // Torso jersey
+    blk(BLUE, 0, -1, 5, 4);
+    // Jersey number "2" (side readable)
+    blk(WHITE, 2, 0, 2, 1);
+    blk(WHITE, 3, 1, 1, 1);
+    blk(WHITE, 2, 2, 2, 1);
+    // Back arm
+    blk(SKIN, -1, 1 + (f%2), 1, 2);
+    // Front arm (forward lean)
+    blk(SKIN, 5, 0 + (1-f%2), 1, 2);
+
+    // ── PANTS ──
+    blk(BLUE, 0, 3, 5, 3);
+    // Gold side stripe
+    blk(GOLD, 4, 3, 1, 3);
+    blk(GOLD, 0, 3, 1, 3);
+
+    // ── LEGS ──
     blk(SKIN, 0, 6+fr.lly, 2, 2);
-    blk(CLEAT, (f%2===0?-1:0), 8+fr.lly+fr.loff, 3, 1);
-    blk(CLEAT2,(f%2===0?-1:0), 9+fr.lly+fr.loff, 3, 1);
-    // Right leg
+    blk(CLEAT, (f%2===0?-1:0), 8+fr.lly+fr.loff, 4, 1);
+    blk(CLEAT2,(f%2===0?-1:0), 9+fr.lly+fr.loff, 4, 1);
     blk(SKIN, 2, 6+fr.rly, 2, 2);
-    blk(CLEAT, (f%2===0?2:1), 8+fr.rly+fr.roff, 3, 1);
-    blk(CLEAT2,(f%2===0?2:1), 9+fr.rly+fr.roff, 3, 1);
+    blk(CLEAT, (f%2===0?2:1), 8+fr.rly+fr.roff, 4, 1);
+    blk(CLEAT2,(f%2===0?2:1), 9+fr.rly+fr.roff, 4, 1);
   }
 
   // ── RING DRAWING ──────────────────────────────────────
