@@ -1157,7 +1157,7 @@ function showToast(msg, error=false) {
 
     // Kewan Lacy running through Green Hill
     const lacyX1 = ((t * 3.2 - sx * 0.95 + 400) % (W + 300)) - 150;
-    for (let r = 0; r < 3; r++) { const rx = ((t*5 + r*370) % (W+500)) - 200; drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
+    for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
     drawKewanLacy(ctx, lacyX1, H * 0.565, t);
   }
 
@@ -1249,7 +1249,7 @@ function showToast(msg, error=false) {
       }
     }
     const lacyX2 = ((t * 3.2 - sx * 0.85 + 500) % (W + 300)) - 150;
-    for (let r = 0; r < 3; r++) { const rx = ((t*5 + r*370) % (W+500)) - 200; drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
+    for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
     drawKewanLacy(ctx, lacyX2, H * 0.655, t);
   }
 
@@ -1368,7 +1368,7 @@ function showToast(msg, error=false) {
       ctx.beginPath(); ctx.arc(lx,ly,60,0,Math.PI*2); ctx.fill();
     }
     const lacyX3 = ((t * 3.2 - sx * 0.9 + 600) % (W + 300)) - 150;
-    for (let r = 0; r < 3; r++) { const rx = ((t*5 + r*370) % (W+500)) - 200; drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
+    for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
     drawKewanLacy(ctx, lacyX3, H * 0.71, t);
   }
 
@@ -1495,7 +1495,7 @@ function showToast(msg, error=false) {
       drawRing(ctx, rx, ry, 13, t+r*45);
     }
     const lacyX4 = ((t * 3.2 - sx * 0.9 + 300) % (W + 300)) - 150;
-    for (let r = 0; r < 3; r++) { const rx = ((t*5 + r*370) % (W+500)) - 200; drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
+    for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
     drawKewanLacy(ctx, lacyX4, H * 0.61, t);
   }
 
@@ -1579,7 +1579,7 @@ function showToast(msg, error=false) {
       ctx.fillText('7 7 7', nsx, H*0.5);
     }
     const lacyX5 = ((t * 3.2 - sx * 0.9 + 700) % (W + 300)) - 150;
-    for (let r = 0; r < 3; r++) { const rx = ((t*5 + r*370) % (W+500)) - 200; drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
+    for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
     drawKewanLacy(ctx, lacyX5, H * 0.71, t);
   }
 
@@ -1671,7 +1671,7 @@ function showToast(msg, error=false) {
       ctx.fillRect(blx, bly+18, 50, 4);
     }
     const lacyX6 = ((t * 3.2 - sx * 0.9 + 450) % (W + 300)) - 150;
-    for (let r = 0; r < 3; r++) { const rx = ((t*5 + r*370) % (W+500)) - 200; drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
+    for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
     drawKewanLacy(ctx, lacyX6, H * 0.665, t);
   }
 
@@ -1748,7 +1748,7 @@ function showToast(msg, error=false) {
       drawRing(ctx, rx, ry, 12, t+r*38);
     }
     const lacyX7 = ((t * 3.2 - sx * 0.9 + 550) % (W + 300)) - 150;
-    for (let r = 0; r < 3; r++) { const rx = ((t*5 + r*370) % (W+500)) - 200; drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
+    for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
     drawKewanLacy(ctx, lacyX7, H * 0.61, t);
   }
 
@@ -1822,38 +1822,38 @@ function showToast(msg, error=false) {
       ctx.restore();
     }
     const lacyX8 = ((t * 3.2 - sx * 0.9 + 350) % (W + 300)) - 150;
-    for (let r = 0; r < 3; r++) { const rx = ((t*5 + r*370) % (W+500)) - 200; drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
+    for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
     drawKewanLacy(ctx, lacyX8, H * 0.665, t);
   }
 
   // ── PIXEL ROCKET ──────────────────────────────────────
   function drawPixelRocket(ctx, rx, ry, t) {
     const fl = Math.sin(t * 0.35) * 0.4 + 0.6;
-    // Flame trail
-    ctx.fillStyle = `rgba(255,${Math.floor(80+fl*160)},0,0.85)`;
-    ctx.fillRect(rx - 18, ry + 3, 16, 8);
-    ctx.fillStyle = 'rgba(255,240,80,0.9)';
-    ctx.fillRect(rx - 10, ry + 5, 7, 4);
+    // Nose cone (left = direction of travel)
+    ctx.fillStyle = '#cc2200';
+    ctx.fillRect(rx, ry + 2, 10, 10);
+    ctx.fillRect(rx - 5, ry + 4, 5, 6);
+    ctx.fillRect(rx - 8, ry + 5, 3, 4);
     // Body
     ctx.fillStyle = '#aaaaaa';
-    ctx.fillRect(rx, ry, 28, 14);
+    ctx.fillRect(rx + 10, ry, 28, 14);
     // Top stripe
     ctx.fillStyle = '#2979C8';
-    ctx.fillRect(rx, ry, 28, 4);
-    // Nose cone
-    ctx.fillStyle = '#cc2200';
-    ctx.fillRect(rx + 28, ry + 2, 10, 10);
-    ctx.fillRect(rx + 38, ry + 4, 5, 6);
-    ctx.fillRect(rx + 43, ry + 5, 3, 4);
-    // Fins
+    ctx.fillRect(rx + 10, ry, 28, 4);
+    // Fins (right side = back)
     ctx.fillStyle = '#888888';
-    ctx.fillRect(rx - 4, ry - 5, 6, 10);
-    ctx.fillRect(rx - 4, ry + 9, 6, 10);
+    ctx.fillRect(rx + 38, ry - 5, 6, 10);
+    ctx.fillRect(rx + 38, ry + 9, 6, 10);
     // Window
     ctx.fillStyle = '#88ccff';
-    ctx.fillRect(rx + 14, ry + 4, 8, 6);
+    ctx.fillRect(rx + 16, ry + 4, 8, 6);
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.fillRect(rx + 15, ry + 5, 3, 2);
+    ctx.fillRect(rx + 17, ry + 5, 3, 2);
+    // Flame trail (right = back)
+    ctx.fillStyle = `rgba(255,${Math.floor(80+fl*160)},0,0.85)`;
+    ctx.fillRect(rx + 38, ry + 3, 18, 8);
+    ctx.fillStyle = 'rgba(255,240,80,0.9)';
+    ctx.fillRect(rx + 42, ry + 5, 8, 4);
   }
 
   // ── KEWAN LACY PIXEL PLAYER ───────────────────────────
