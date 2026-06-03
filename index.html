@@ -955,6 +955,7 @@ function showToast(msg, error=false) {
     { name: 'Aquatic Ruin Zone', draw: drawAquaticRuin },
     { name: 'Sky Chase Zone', draw: drawSkyChase },
     { name: 'Mystic Cave Zone', draw: drawMysticCave },
+    { name: 'Vaught-Hemingway Stadium', draw: drawCollegeFootball },
   ];
 
   let currentScene = 0;
@@ -1949,6 +1950,134 @@ function showToast(msg, error=false) {
     blk(SKIN, 2, 6+fr.rly, 2, 2);
     blk(DARK, (f%2===0?2:1), 8+fr.rly+fr.roff, 4, 1);
     blk(DARK, (f%2===0?2:1), 9+fr.rly+fr.roff, 4, 1);
+  }
+
+  // ── SCENE 9: VAUGHT-HEMINGWAY STADIUM ────────────────
+  function drawCollegeFootball(ctx, W, H, t, sx) {
+    // Night sky
+    const sky = ctx.createLinearGradient(0,0,0,H);
+    sky.addColorStop(0,'#030510');
+    sky.addColorStop(0.5,'#06091a');
+    sky.addColorStop(1,'#0a1030');
+    ctx.fillStyle = sky; ctx.fillRect(0,0,W,H);
+
+    // Stars (sparse — stadium lights wash them out)
+    for (let s = 0; s < 18; s++) {
+      const stx = (s*113+s*7)%W; const sty = (s*37)%(H*0.2);
+      ctx.fillStyle = `rgba(255,255,255,${0.2+s%3*0.1})`;
+      ctx.beginPath(); ctx.arc(stx,sty,1,0,Math.PI*2); ctx.fill();
+    }
+
+    // Upper stands
+    ctx.fillStyle = '#12122a';
+    ctx.fillRect(0, H*0.04, W, H*0.26);
+    // Crowd rows
+    const crowdCols = ['#2979C8','#9B2335','#ffffff','#c8102e','#ffdd00','#003087'];
+    for (let c = 0; c < 100; c++) {
+      const cx = ((c*19+40 - sx*0.02+4000)%(W+60))-30;
+      const cy = H*0.05 + (c%6)*(H*0.04);
+      ctx.fillStyle = crowdCols[c%crowdCols.length];
+      ctx.fillRect(cx, cy, 9, 12);
+      // arms up occasionally
+      if (c%7===0) { ctx.fillRect(cx-3, cy-6, 3, 6); ctx.fillRect(cx+9, cy-6, 3, 6); }
+    }
+
+    // Stadium light towers (4)
+    for (let l = 0; l < 4; l++) {
+      const lx = ((l*320+60 - sx*0.04+3000)%(W+400))-200;
+      ctx.fillStyle = '#555566'; ctx.fillRect(lx-4, H*0.01, 8, H*0.29); // pole
+      ctx.fillStyle = '#ffffcc'; ctx.fillRect(lx-28, H*0.01, 56, 12);   // light bank
+      // glow
+      const grd = ctx.createRadialGradient(lx,H*0.04,0,lx,H*0.04,90);
+      grd.addColorStop(0,'rgba(255,255,200,0.25)');
+      grd.addColorStop(1,'rgba(255,255,200,0)');
+      ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(lx,H*0.04,90,0,Math.PI*2); ctx.fill();
+    }
+
+    // Scoreboard
+    const sbx = ((200 - sx*0.06+2000)%(W+500))-250;
+    ctx.fillStyle = '#0a0a0a'; ctx.fillRect(sbx, H*0.05, 200, 90);
+    ctx.strokeStyle = '#FFD700'; ctx.lineWidth = 3; ctx.strokeRect(sbx, H*0.05, 200, 90);
+    ctx.fillStyle = '#2979C8'; ctx.fillRect(sbx+4, H*0.05+4, 192, 20);
+    ctx.fillStyle = '#ffffff'; ctx.font = `bold 12px monospace`;
+    ctx.fillText('OLE MISS', sbx+10, H*0.05+19);
+    ctx.fillStyle = '#FFD700'; ctx.font = `bold 18px monospace`;
+    ctx.fillText('21', sbx+160, H*0.05+19);
+    ctx.fillStyle = '#9B2335'; ctx.fillRect(sbx+4, H*0.05+26, 192, 20);
+    ctx.fillStyle = '#ffffff'; ctx.font = `bold 12px monospace`;
+    ctx.fillText('ALABAMA', sbx+10, H*0.05+41);
+    ctx.fillStyle = '#ffffff'; ctx.font = `bold 18px monospace`;
+    ctx.fillText('14', sbx+160, H*0.05+41);
+    ctx.fillStyle = '#333333'; ctx.fillRect(sbx+4, H*0.05+48, 192, 38);
+    ctx.fillStyle = '#ff4400'; ctx.font = `bold 11px monospace`;
+    const blinkOn = Math.floor(t*0.05)%2===0;
+    ctx.fillText(`4TH QTR  0:${blinkOn?'23':'  '}`, sbx+10, H*0.05+66);
+    ctx.fillStyle = '#FFD700'; ctx.fillText('GROVE BOWL', sbx+10, H*0.05+84);
+
+    // Field surface — alternating stripes
+    for (let s = 0; s < 10; s++) {
+      ctx.fillStyle = s%2===0 ? '#1a7a1a' : '#1d8a1d';
+      ctx.fillRect(s*(W/10), H*0.3, W/10, H*0.7);
+    }
+
+    // End zone — Ole Miss left
+    ctx.fillStyle = '#1E5FAA';
+    ctx.fillRect(0, H*0.3, W*0.1, H*0.7);
+    ctx.fillStyle = '#ffffff'; ctx.font = `bold ${Math.floor(H*0.035)}px monospace`;
+    ctx.save(); ctx.translate(W*0.05, H*0.65); ctx.rotate(-Math.PI/2);
+    ctx.fillText('OLE MISS', -H*0.14, 0); ctx.restore();
+
+    // End zone — Alabama right
+    ctx.fillStyle = '#8B1A28';
+    ctx.fillRect(W*0.9, H*0.3, W*0.1, H*0.7);
+    ctx.fillStyle = '#ffffff';
+    ctx.save(); ctx.translate(W*0.95, H*0.65); ctx.rotate(-Math.PI/2);
+    ctx.fillText('ALABAMA', -H*0.14, 0); ctx.restore();
+
+    // Yard lines + numbers
+    ctx.strokeStyle = 'rgba(255,255,255,0.75)'; ctx.lineWidth = 2;
+    for (let y = 0; y <= 10; y++) {
+      const yx = ((W*0.1 + y*(W*0.8/10) - sx*0.6 + 6000) % (W*1.2)) - W*0.1;
+      ctx.beginPath(); ctx.moveTo(yx, H*0.3); ctx.lineTo(yx, H); ctx.stroke();
+      if (y>0 && y<10) {
+        const num = y<=5 ? y*10 : (10-y)*10;
+        ctx.fillStyle='rgba(255,255,255,0.55)'; ctx.font=`${Math.floor(H*0.028)}px monospace`;
+        ctx.fillText(num, yx+4, H*0.35);
+      }
+    }
+
+    // Hash marks
+    for (let h = 0; h < 25; h++) {
+      const hx = ((h*(W/14) - sx*0.6+6000)%(W+80))-40;
+      ctx.strokeStyle='rgba(255,255,255,0.35)'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(hx,H*0.52); ctx.lineTo(hx+14,H*0.52); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(hx,H*0.67); ctx.lineTo(hx+14,H*0.67); ctx.stroke();
+    }
+
+    // Goal posts (yellow, both ends)
+    for (let g = 0; g < 3; g++) {
+      const gx = ((g*(W*0.45)+W*0.1 - sx*0.6+6000)%(W+300))-150;
+      ctx.fillStyle='#FFD700';
+      ctx.fillRect(gx-3, H*0.31, 6, H*0.22);          // base upright
+      ctx.fillRect(gx-22, H*0.41, 44, 5);              // crossbar
+      ctx.fillRect(gx-24, H*0.31, 5, H*0.14);          // left fork
+      ctx.fillRect(gx+19, H*0.31, 5, H*0.14);          // right fork
+    }
+
+    // Floating rings over the field
+    for (let r = 0; r < 4; r++) {
+      const rx = ((r*200+90 - sx*0.85+2000)%(W+200))-100;
+      const ry = H*0.38 + Math.sin(t*0.05+r)*14;
+      drawRing(ctx, rx, ry, 13, t+r*42);
+    }
+
+    // Kewan Lacy running through the stadium
+    const lacyX9 = ((t * 3.2 - sx * 0.9 + 250) % (W + 300)) - 150;
+    const ryanX9 = W + 100 - ((t * 3.0 + 900) % (W + 400));
+    const dx9 = ryanX9 - lacyX9; const jump9 = (dx9 > -50 && dx9 < 100) ? Math.round(20 * Math.sin(Math.PI * (dx9 + 50) / 150)) : 0;
+    if (ryanX9 > -150 && ryanX9 < W + 150) drawRyanWilliams(ctx, ryanX9, H * 0.73, t);
+    for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
+    drawKewanLacy(ctx, lacyX9, H * 0.73, t, jump9);
   }
 
   // ── KEWAN LACY PIXEL PLAYER ───────────────────────────
