@@ -23,7 +23,7 @@ When the user says "add a pack" or gives pack details, edit `packs.json` by appe
 ### Field rules
 - `id` — auto-generate from `name`: lowercase, spaces and special chars replaced with `-`, strip leading/trailing `-`. Must be unique across all entries.
 - `artist` — default to `"ProdbyJeremiah"` unless told otherwise.
-- `genre` — must be one of: `"Trap"`, `"R&B"`, `"Underground"`. Ask if unclear.
+- `genre` — must be one of: `"Trap"`, `"R&B"`, `"Underground"`, `"One Shots"`. Ask if unclear.
 - `bpm` — string, e.g. `"140"` or `"80–95"`. Leave `""` if not provided.
 - `desc` — keep it concise (1–2 sentences). Leave `""` if not provided.
 - `cover` — paste the URL exactly as given. If it's a Google Drive share link, leave it as-is (the site doesn't transform cover URLs). Use `null` if none.
