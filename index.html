@@ -2073,25 +2073,12 @@ function showToast(msg, error=false) {
       }
     }
 
-    // Hash marks (chunky)
+    // Hash marks — wider
     for (let h = 0; h < 28; h++) {
       const hx = ((h*(W/15) - sx*0.7+7000)%(W+100))-50;
-      ctx.fillStyle='rgba(255,255,255,0.5)';
-      ctx.fillRect(hx, H*0.48, 16, 3);
-      ctx.fillRect(hx, H*0.63, 16, 3);
-    }
-
-    // Goal posts — chunky Retro Bowl yellow
-    for (let g = 0; g < 3; g++) {
-      const gx = ((g*(W*0.45)+W*0.1 - sx*0.7+7000)%(W+300))-150;
-      ctx.fillStyle='#FFD700';
-      ctx.fillRect(gx-4, H*0.25, 8, H*0.20);   // base
-      ctx.fillRect(gx-28, H*0.36, 56, 6);        // crossbar
-      ctx.fillRect(gx-30, H*0.25, 6, H*0.13);   // left fork
-      ctx.fillRect(gx+24, H*0.25, 6, H*0.13);   // right fork
-      // shadow
-      ctx.fillStyle='rgba(0,0,0,0.2)';
-      ctx.fillRect(gx+4, H*0.26, 4, H*0.19);
+      ctx.fillStyle='rgba(255,255,255,0.55)';
+      ctx.fillRect(hx, H*0.48, 36, 4);
+      ctx.fillRect(hx, H*0.63, 36, 4);
     }
 
     // Floating rings
@@ -2101,12 +2088,54 @@ function showToast(msg, error=false) {
       drawRing(ctx, rx, ry, 13, t+r*42);
     }
 
+    // Fireworks (replace rockets in this scene)
+    const fwColors = ['#FFD700','#ff4444','#44aaff','#ff88ff','#88ffaa','#ffffff'];
+    for (let fw = 0; fw < 5; fw++) {
+      const fwCycle = 180;
+      const fwPhase = (Math.floor(t + fw*37) % fwCycle) / fwCycle;
+      const fwx = ((fw*220 + 80 - sx*0.05 + 1000) % (W+300)) - 100;
+      const fwy = H*(0.10 + fw%3*0.05);
+      if (fwPhase < 0.15) {
+        // Rising streak
+        const rise = fwPhase / 0.15;
+        ctx.fillStyle = fwColors[fw%fwColors.length];
+        ctx.fillRect(fwx-2, fwy + (1-rise)*H*0.12, 4, 10);
+      } else if (fwPhase < 0.6) {
+        // Burst
+        const burst = (fwPhase - 0.15) / 0.45;
+        const radius = burst * 55;
+        const alpha = 1 - burst * 0.8;
+        const col = fwColors[fw%fwColors.length];
+        const spokes = 10;
+        for (let s = 0; s < spokes; s++) {
+          const angle = (s/spokes)*Math.PI*2;
+          const ex = fwx + Math.cos(angle)*radius;
+          const ey = fwy + Math.sin(angle)*radius;
+          ctx.strokeStyle = col.replace(')', `,${alpha})`).replace('rgb','rgba').replace('#','rgba(') || col;
+          ctx.strokeStyle = `rgba(${parseInt(col.slice(1,3),16)},${parseInt(col.slice(3,5),16)},${parseInt(col.slice(5,7),16)},${alpha})`;
+          ctx.lineWidth = 3 - burst*2;
+          ctx.beginPath(); ctx.moveTo(fwx, fwy); ctx.lineTo(ex, ey); ctx.stroke();
+          // sparkle dot at tip
+          ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+          ctx.fillRect(ex-2, ey-2, 4, 4);
+        }
+        // Secondary smaller burst
+        const spokes2 = 6;
+        for (let s = 0; s < spokes2; s++) {
+          const angle = (s/spokes2)*Math.PI*2 + 0.3;
+          const ex = fwx + Math.cos(angle)*radius*0.55;
+          const ey = fwy + Math.sin(angle)*radius*0.55;
+          ctx.fillStyle = `rgba(255,255,200,${alpha*0.8})`;
+          ctx.fillRect(ex-1, ey-1, 3, 3);
+        }
+      }
+    }
+
     // Players on field
     const lacyX9 = ((t * 3.2 - sx * 0.9 + 250) % (W + 300)) - 150;
     const ryanX9 = W + 100 - ((t * 3.0 + 900) % (W + 400));
     const dx9 = ryanX9 - lacyX9; const jump9 = (dx9 > -50 && dx9 < 100) ? Math.round(20 * Math.sin(Math.PI * (dx9 + 50) / 150)) : 0;
     if (ryanX9 > -150 && ryanX9 < W + 150) drawRyanWilliams(ctx, ryanX9, H * 0.76, t);
-    for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.14+r*0.06), t+r*20); }
     drawKewanLacy(ctx, lacyX9, H * 0.76, t, jump9);
   }
 
