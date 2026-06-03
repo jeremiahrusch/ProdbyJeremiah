@@ -1156,8 +1156,11 @@ function showToast(msg, error=false) {
 
     // Kewan Lacy running through Green Hill
     const lacyX1 = ((t * 3.2 - sx * 0.95 + 400) % (W + 300)) - 150;
+    const ryanX1 = W + 100 - ((t * 3.0 + 0) % (W + 400));
+    const dx1 = ryanX1 - lacyX1; const jump1 = (dx1 > -50 && dx1 < 100) ? Math.round(20 * Math.sin(Math.PI * (dx1 + 50) / 150)) : 0;
+    if (ryanX1 > -150 && ryanX1 < W + 150) drawRyanWilliams(ctx, ryanX1, H * 0.68, t);
     for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
-    drawKewanLacy(ctx, lacyX1, H * 0.68, t);
+    drawKewanLacy(ctx, lacyX1, H * 0.68, t, jump1);
   }
 
   // ── SCENE 2: CHEMICAL PLANT ──────────────────────────
@@ -1248,8 +1251,11 @@ function showToast(msg, error=false) {
       }
     }
     const lacyX2 = ((t * 3.2 - sx * 0.85 + 500) % (W + 300)) - 150;
+    const ryanX2 = W + 100 - ((t * 3.0 + 500) % (W + 400));
+    const dx2 = ryanX2 - lacyX2; const jump2 = (dx2 > -50 && dx2 < 100) ? Math.round(20 * Math.sin(Math.PI * (dx2 + 50) / 150)) : 0;
+    if (ryanX2 > -150 && ryanX2 < W + 150) drawRyanWilliams(ctx, ryanX2, H * 0.70, t);
     for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
-    drawKewanLacy(ctx, lacyX2, H * 0.70, t);
+    drawKewanLacy(ctx, lacyX2, H * 0.70, t, jump2);
   }
 
   // ── SCENE 3: STAR LIGHT ZONE ─────────────────────────
@@ -1367,8 +1373,11 @@ function showToast(msg, error=false) {
       ctx.beginPath(); ctx.arc(lx,ly,60,0,Math.PI*2); ctx.fill();
     }
     const lacyX3 = ((t * 3.2 - sx * 0.9 + 600) % (W + 300)) - 150;
+    const ryanX3 = W + 100 - ((t * 3.0 + 1000) % (W + 400));
+    const dx3 = ryanX3 - lacyX3; const jump3 = (dx3 > -50 && dx3 < 100) ? Math.round(20 * Math.sin(Math.PI * (dx3 + 50) / 150)) : 0;
+    if (ryanX3 > -150 && ryanX3 < W + 150) drawRyanWilliams(ctx, ryanX3, H * 0.75, t);
     for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
-    drawKewanLacy(ctx, lacyX3, H * 0.75, t);
+    drawKewanLacy(ctx, lacyX3, H * 0.75, t, jump3);
   }
 
   // ── SCENE 4: MARBLE ZONE ─────────────────────────────
@@ -1494,8 +1503,11 @@ function showToast(msg, error=false) {
       drawRing(ctx, rx, ry, 13, t+r*45);
     }
     const lacyX4 = ((t * 3.2 - sx * 0.9 + 300) % (W + 300)) - 150;
+    const ryanX4 = W + 100 - ((t * 3.0 + 1500) % (W + 400));
+    const dx4 = ryanX4 - lacyX4; const jump4 = (dx4 > -50 && dx4 < 100) ? Math.round(20 * Math.sin(Math.PI * (dx4 + 50) / 150)) : 0;
+    if (ryanX4 > -150 && ryanX4 < W + 150) drawRyanWilliams(ctx, ryanX4, H * 0.72, t);
     for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
-    drawKewanLacy(ctx, lacyX4, H * 0.72, t);
+    drawKewanLacy(ctx, lacyX4, H * 0.72, t, jump4);
   }
 
 
@@ -1578,8 +1590,11 @@ function showToast(msg, error=false) {
       ctx.fillText('7 7 7', nsx, H*0.5);
     }
     const lacyX5 = ((t * 3.2 - sx * 0.9 + 700) % (W + 300)) - 150;
+    const ryanX5 = W + 100 - ((t * 3.0 + 200) % (W + 400));
+    const dx5 = ryanX5 - lacyX5; const jump5 = (dx5 > -50 && dx5 < 100) ? Math.round(20 * Math.sin(Math.PI * (dx5 + 50) / 150)) : 0;
+    if (ryanX5 > -150 && ryanX5 < W + 150) drawRyanWilliams(ctx, ryanX5, H * 0.75, t);
     for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
-    drawKewanLacy(ctx, lacyX5, H * 0.75, t);
+    drawKewanLacy(ctx, lacyX5, H * 0.75, t, jump5);
   }
 
   // ── SCENE 6: AQUATIC RUIN ZONE ───────────────────────────
@@ -1670,8 +1685,11 @@ function showToast(msg, error=false) {
       ctx.fillRect(blx, bly+18, 50, 4);
     }
     const lacyX6 = ((t * 3.2 - sx * 0.9 + 450) % (W + 300)) - 150;
+    const ryanX6 = W + 100 - ((t * 3.0 + 700) % (W + 400));
+    const dx6 = ryanX6 - lacyX6; const jump6 = (dx6 > -50 && dx6 < 100) ? Math.round(20 * Math.sin(Math.PI * (dx6 + 50) / 150)) : 0;
+    if (ryanX6 > -150 && ryanX6 < W + 150) drawRyanWilliams(ctx, ryanX6, H * 0.72, t);
     for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
-    drawKewanLacy(ctx, lacyX6, H * 0.72, t);
+    drawKewanLacy(ctx, lacyX6, H * 0.72, t, jump6);
   }
 
   // ── SCENE 7: SKY CHASE ZONE ──────────────────────────────
@@ -1747,8 +1765,11 @@ function showToast(msg, error=false) {
       drawRing(ctx, rx, ry, 12, t+r*38);
     }
     const lacyX7 = ((t * 3.2 - sx * 0.9 + 550) % (W + 300)) - 150;
+    const ryanX7 = W + 100 - ((t * 3.0 + 1200) % (W + 400));
+    const dx7 = ryanX7 - lacyX7; const jump7 = (dx7 > -50 && dx7 < 100) ? Math.round(20 * Math.sin(Math.PI * (dx7 + 50) / 150)) : 0;
+    if (ryanX7 > -150 && ryanX7 < W + 150) drawRyanWilliams(ctx, ryanX7, H * 0.75, t);
     for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
-    drawKewanLacy(ctx, lacyX7, H * 0.75, t);
+    drawKewanLacy(ctx, lacyX7, H * 0.75, t, jump7);
   }
 
   // ── SCENE 8: MYSTIC CAVE ZONE ────────────────────────────
@@ -1821,8 +1842,11 @@ function showToast(msg, error=false) {
       ctx.restore();
     }
     const lacyX8 = ((t * 3.2 - sx * 0.9 + 350) % (W + 300)) - 150;
+    const ryanX8 = W + 100 - ((t * 3.0 + 1700) % (W + 400));
+    const dx8 = ryanX8 - lacyX8; const jump8 = (dx8 > -50 && dx8 < 100) ? Math.round(20 * Math.sin(Math.PI * (dx8 + 50) / 150)) : 0;
+    if (ryanX8 > -150 && ryanX8 < W + 150) drawRyanWilliams(ctx, ryanX8, H * 0.72, t);
     for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
-    drawKewanLacy(ctx, lacyX8, H * 0.72, t);
+    drawKewanLacy(ctx, lacyX8, H * 0.72, t, jump8);
   }
 
   // ── PIXEL ROCKET ──────────────────────────────────────
@@ -1857,69 +1881,83 @@ function showToast(msg, error=false) {
     ctx.fillRect(rx + 42, ry + 5, 8, 4);
   }
 
-  // ── RYAN WILLIAMS PIXEL PLAYER (obstacle) ────────────
-  function drawRyanWilliams(ctx, x, y) {
+  // ── RYAN WILLIAMS PIXEL PLAYER (runs right→left) ─────
+  function drawRyanWilliams(ctx, baseX, baseY, t) {
     const p = 4;
+    const f = Math.floor(t * 0.2) % 4;
+    const y = baseY - 12*p;
     function blk(col, dx, dy, w, h) {
       ctx.fillStyle = col;
-      ctx.fillRect(x + dx*p, y + dy*p, (w||1)*p, (h||1)*p);
+      ctx.fillRect(baseX + dx*p, y + dy*p, (w||1)*p, (h||1)*p);
     }
     const CRIM='#9B2335', CRIM2='#7A1B28', WHITE='#ffffff', DARK='#111111';
-    const SKIN='#7B3F00', MASK='#aaaaaa';
+    const SKIN='#7B3F00', MASK='#aabbcc';
+    const frames = [
+      {lly:0,rly:2,loff:1,roff:0},
+      {lly:1,rly:1,loff:0,roff:0},
+      {lly:2,rly:0,loff:0,roff:1},
+      {lly:1,rly:1,loff:0,roff:0},
+    ];
+    const fr = frames[f];
+    // Speed lines to the RIGHT (behind Ryan as he runs left)
+    ctx.strokeStyle = 'rgba(155,35,53,0.45)'; ctx.lineWidth = 2;
+    for (let sl = 0; sl < 5; sl++) {
+      ctx.beginPath();
+      ctx.moveTo(baseX + 7*p + sl*5, y + sl*3*p);
+      ctx.lineTo(baseX + 14*p, y + sl*3*p);
+      ctx.stroke();
+    }
 
-    // Helmet — white with crimson stripe, side profile facing left (standing tall)
-    blk(WHITE, -1, -12, 5, 1); // top
-    blk(WHITE, -1, -11, 6, 4); // dome
-    blk(CRIM,   1, -12, 2, 5); // crimson stripe
-    blk(WHITE, -1,  -8, 5, 1); // chin area
-    // Facemask
-    blk(MASK, -3, -10, 3, 1);
-    blk(MASK, -3, -10, 1, 3);
-    blk(MASK, -3,  -8, 3, 1);
+    // Helmet — white with crimson stripe, facing LEFT
+    blk(WHITE,  0, -8, 5, 1); // top
+    blk(WHITE, -1, -7, 7, 4); // dome
+    blk(CRIM,   2, -8, 2, 5); // crimson stripe
+    blk(WHITE,  0, -4, 5, 1); // chin
+    // Facemask extending LEFT
+    blk(MASK, -3, -6, 3, 1);
+    blk(MASK, -3, -6, 1, 3);
+    blk(MASK, -3, -4, 3, 1);
+    blk(MASK, -2, -5, 1, 2);
     // Eye
-    blk(DARK, 0, -10, 1, 1);
+    blk(WHITE, 0, -6, 1, 1); blk(DARK, 0, -6, 1, 1);
     // Chin strap
-    blk(DARK, 0, -8, 2, 1);
+    blk(DARK, 0, -4, 2, 1);
     // Neck
-    blk(SKIN, 1, -7, 2, 1);
+    blk(SKIN, 1, -3, 2, 1);
     // Shoulder pads
-    blk(WHITE, -1, -6, 7, 1);
-    // Jersey — crimson, standing upright
-    blk(CRIM,  0, -6, 4, 5);
-    blk(CRIM2, 0, -2, 4, 1); // shadow
+    blk(CRIM, -1, -2, 7, 1);
+    // Torso jersey
+    blk(CRIM,  0, -2, 5, 5);
+    blk(CRIM2, 0,  2, 5, 1);
     // Number 2
-    blk(WHITE, 1, -6, 2, 1);
-    blk(WHITE, 2, -5, 1, 1);
-    blk(WHITE, 1, -4, 2, 1);
-    blk(WHITE, 0, -3, 1, 1);
-    blk(WHITE, 0, -2, 2, 1);
-    // Arms at sides
-    blk(CRIM, -1, -5, 1, 3);
-    blk(SKIN, -1, -3, 1, 1);
-    blk(CRIM,  4, -5, 1, 3);
-    blk(SKIN,  4, -3, 1, 1);
-    // Pants — crimson, standing straight
-    blk(CRIM, 0, -1, 2, 5);
-    blk(CRIM, 2, -1, 2, 5);
-    // White stripe on pants
-    blk(WHITE, 0, -1, 1, 5);
-    blk(WHITE, 3, -1, 1, 5);
-    // Cleats
-    blk(DARK, -1, 4, 3, 1);
-    blk(DARK,  3, 4, 3, 1);
+    blk(WHITE, 2, -2, 2, 1);
+    blk(WHITE, 3, -1, 1, 1);
+    blk(WHITE, 2,  0, 2, 1);
+    // Back arm (right = back when running left)
+    blk(SKIN, 5, 1+(f%2), 1, 2);
+    // Front arm (left = forward)
+    blk(SKIN, -1, 0+(1-f%2), 1, 2);
+    // Pants
+    blk(CRIM, 0, 3, 5, 3);
+    blk(WHITE, 0, 3, 1, 3);
+    blk(WHITE, 4, 3, 1, 3);
+    // Left leg
+    blk(SKIN, 0, 6+fr.lly, 2, 2);
+    blk(DARK, (f%2===0?-1:0), 8+fr.lly+fr.loff, 4, 1);
+    blk(DARK, (f%2===0?-1:0), 9+fr.lly+fr.loff, 4, 1);
+    // Right leg
+    blk(SKIN, 2, 6+fr.rly, 2, 2);
+    blk(DARK, (f%2===0?2:1), 8+fr.rly+fr.roff, 4, 1);
+    blk(DARK, (f%2===0?2:1), 9+fr.rly+fr.roff, 4, 1);
   }
 
   // ── KEWAN LACY PIXEL PLAYER ───────────────────────────
-  function drawKewanLacy(ctx, baseX, baseY, t) {
+  function drawKewanLacy(ctx, baseX, baseY, t, extJumpPx) {
     const p = 4;
-    const PERIOD = 310, DUR = 52;
-    const tMod = Math.floor(t) % PERIOD;
-    const inDodge = tMod < DUR;
-    const jumpPx = inDodge ? Math.round(Math.sin((tMod / DUR) * Math.PI) * 20) : 0;
+    const jumpPx = extJumpPx || 0;
     const x = baseX;
     const y = baseY - 12*p - jumpPx * p;
-
-    const f = inDodge ? 1 : Math.floor(t * 0.2) % 4;
+    const f = jumpPx > 2 ? 1 : Math.floor(t * 0.2) % 4;
     function blk(col, dx, dy, w, h) {
       ctx.fillStyle = col;
       ctx.fillRect(x + dx*p, y + dy*p, (w||1)*p, (h||1)*p);
@@ -1999,12 +2037,6 @@ function showToast(msg, error=false) {
     blk(CLEAT, (f%2===0?2:1), 8+fr.rly+fr.roff, 4, 1);
     blk(CLEAT2,(f%2===0?2:1), 9+fr.rly+fr.roff, 4, 1);
 
-    // Ryan Williams crouching — Kewan hurdles over him
-    const showRyan = tMod > PERIOD - 90;
-    if (showRyan) {
-      const rwx = baseX + (PERIOD - tMod) * 0.5 * p;
-      drawRyanWilliams(ctx, rwx, baseY);
-    }
   }
 
   // ── RING DRAWING ──────────────────────────────────────
