@@ -830,7 +830,6 @@ function getTotalDownloads() {
 function updateHUD() {
   const total = getTotalDownloads();
   document.getElementById('total-packs').textContent = packs.length;
-  document.getElementById('total-downloads').textContent = total >= 1000 ? (total/1000).toFixed(1)+'k' : total;
   document.getElementById('rings-hud').textContent = (total >= 1000 ? (total/1000).toFixed(1)+'K' : total) + ' RINGS';
 }
 
