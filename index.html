@@ -1883,14 +1883,11 @@ function showToast(msg, error=false) {
   }
 
   // ── RYAN WILLIAMS PIXEL PLAYER (runs right→left) ─────
+  // Uses ctx.scale(-1,1) to mirror Kewan's exact pixel art
   function drawRyanWilliams(ctx, baseX, baseY, t) {
     const p = 4;
     const f = Math.floor(t * 0.2) % 4;
-    const y = baseY - 12*p;
-    function blk(col, dx, dy, w, h) {
-      ctx.fillStyle = col;
-      ctx.fillRect(baseX + dx*p, y + dy*p, (w||1)*p, (h||1)*p);
-    }
+    const SPRITE_W = 10;
     const CRIM='#9B2335', CRIM2='#7A1B28', WHITE='#ffffff', DARK='#111111';
     const SKIN='#7B3F00', MASK='#aabbcc';
     const frames = [
@@ -1900,63 +1897,69 @@ function showToast(msg, error=false) {
       {lly:1,rly:1,loff:0,roff:0},
     ];
     const fr = frames[f];
-    // Speed lines to the RIGHT (behind Ryan as he runs left)
+
+    ctx.save();
+    ctx.translate(baseX + SPRITE_W * p, 0);
+    ctx.scale(-1, 1);
+
+    const ox = 0;
+    const oy = baseY - 12*p;
+    function blk(col, dx, dy, w, h) {
+      ctx.fillStyle = col;
+      ctx.fillRect(ox + dx*p, oy + dy*p, (w||1)*p, (h||1)*p);
+    }
+
+    // Speed lines (trail right on screen after flip)
     ctx.strokeStyle = 'rgba(155,35,53,0.45)'; ctx.lineWidth = 2;
     for (let sl = 0; sl < 5; sl++) {
       ctx.beginPath();
-      ctx.moveTo(baseX + 7*p + sl*5, y + sl*3*p);
-      ctx.lineTo(baseX + 14*p, y + sl*3*p);
+      ctx.moveTo(ox - 12*p - sl*4, oy - 2*p + sl*4*p);
+      ctx.lineTo(ox - 1*p, oy - 2*p + sl*4*p);
       ctx.stroke();
     }
 
-    // Helmet — crimson dome, white mohawk stripe, side profile facing LEFT
-    // (mirrors Kewan's helmet style)
-    blk(CRIM,  5, -8, 1, 1);  // back dome tip
-    blk(CRIM2, 5, -7, 1, 4);  // back wall shadow
-    blk(CRIM, -1, -8, 6, 1);  // top row
-    blk(CRIM, -1, -7, 7, 4);  // dome body
-    blk(CRIM,  0, -3, 5, 1);  // chin curve
-    // White mohawk stripe down center-top
-    blk(WHITE, 1, -8, 2, 5);
-    // Facemask extending LEFT (mirrored from Kewan's)
-    blk(MASK, -5, -6, 3, 1);  // top bar
-    blk(MASK, -6, -6, 1, 4);  // vertical bar
-    blk(MASK, -5, -3, 3, 1);  // bottom bar
-    blk(MASK, -4, -5, 1, 3);  // inner vertical
-    // Eye visible through facemask gap
-    blk(WHITE, 0, -6, 1, 1); blk(DARK, 0, -6, 1, 1);
-    // Alabama A logo
-    blk(WHITE, 3, -7, 1, 1);
-    // Chin strap
-    blk(MASK, 0, -3, 4, 1);
-    blk(DARK, 1, -3, 2, 1);
-    // Neck
-    blk(SKIN, 1, -3, 2, 1);
-    // Shoulder pads
-    blk(CRIM, -1, -2, 7, 1);
-    // Torso jersey
-    blk(CRIM,  0, -2, 5, 5);
+    // HELMET — identical shape to Kewan's, crimson + white stripe
+    blk(CRIM,  -1, -8, 1, 1);
+    blk(CRIM2,  -2, -7, 1, 4);
+    blk(CRIM,  -1, -8, 5, 1);
+    blk(CRIM,  -1, -7, 6, 4);
+    blk(CRIM,   0, -3, 5, 1);
+    blk(WHITE,  1, -8, 2, 5);
+    blk(MASK,   4, -6, 3, 1);
+    blk(MASK,   6, -6, 1, 4);
+    blk(MASK,   4, -3, 3, 1);
+    blk(MASK,   4, -5, 1, 3);
+    blk(WHITE,  3, -6, 1, 1); blk(DARK, 3, -6, 1, 1);
+    blk(WHITE,  0, -7, 1, 1);
+    blk(MASK,   0, -3, 4, 1); blk(DARK, 1, -3, 2, 1);
+
+    // BODY
+    blk(SKIN,  1, -2, 2, 1);
+    blk(CRIM, -1, -1, 7, 1);
+    blk(CRIM,  0, -1, 5, 4);
     blk(CRIM2, 0,  2, 5, 1);
-    // Number 2
-    blk(WHITE, 2, -2, 2, 1);
-    blk(WHITE, 3, -1, 1, 1);
-    blk(WHITE, 2,  0, 2, 1);
-    // Back arm (right = back when running left)
-    blk(SKIN, 5, 1+(f%2), 1, 2);
-    // Front arm (left = forward)
-    blk(SKIN, -1, 0+(1-f%2), 1, 2);
-    // Pants
+    blk(WHITE, 1, -1, 2, 1);
+    blk(WHITE, 2,  0, 1, 1);
+    blk(WHITE, 1,  1, 2, 1);
+    blk(WHITE, 0,  2, 1, 1);
+    blk(WHITE, 0,  2, 2, 1);
+    blk(SKIN, -1, 1+(f%2), 1, 2);
+    blk(SKIN,  5, 0+(1-f%2), 1, 2);
+
+    // PANTS
     blk(CRIM, 0, 3, 5, 3);
     blk(WHITE, 0, 3, 1, 3);
     blk(WHITE, 4, 3, 1, 3);
-    // Left leg
+
+    // LEGS
     blk(SKIN, 0, 6+fr.lly, 2, 2);
     blk(DARK, (f%2===0?-1:0), 8+fr.lly+fr.loff, 4, 1);
     blk(DARK, (f%2===0?-1:0), 9+fr.lly+fr.loff, 4, 1);
-    // Right leg
     blk(SKIN, 2, 6+fr.rly, 2, 2);
     blk(DARK, (f%2===0?2:1), 8+fr.rly+fr.roff, 4, 1);
     blk(DARK, (f%2===0?2:1), 9+fr.rly+fr.roff, 4, 1);
+
+    ctx.restore();
   }
 
   // ── SCENE 9: VAUGHT-HEMINGWAY STADIUM ────────────────
