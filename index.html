@@ -1867,46 +1867,46 @@ function showToast(msg, error=false) {
     const CRIM='#9B2335', CRIM2='#7A1B28', WHITE='#ffffff', DARK='#111111';
     const SKIN='#7B3F00', MASK='#aaaaaa';
 
-    // Helmet — white with crimson stripe, side profile facing left
-    blk(WHITE, -1, -8, 5, 1); // top
-    blk(WHITE, -1, -7, 6, 3); // dome
-    blk(CRIM,  1,  -8, 2, 4); // crimson stripe
-    blk(WHITE, -1, -5, 5, 1); // chin area
-    // Facemask (bars facing left — he's facing Kewan coming at him)
-    blk(MASK, -3, -6, 3, 1);  // top bar
-    blk(MASK, -3, -6, 1, 3);  // vertical
-    blk(MASK, -3, -4, 3, 1);  // bottom bar
+    // Helmet — white with crimson stripe, side profile facing left (standing tall)
+    blk(WHITE, -1, -12, 5, 1); // top
+    blk(WHITE, -1, -11, 6, 4); // dome
+    blk(CRIM,   1, -12, 2, 5); // crimson stripe
+    blk(WHITE, -1,  -8, 5, 1); // chin area
+    // Facemask
+    blk(MASK, -3, -10, 3, 1);
+    blk(MASK, -3, -10, 1, 3);
+    blk(MASK, -3,  -8, 3, 1);
     // Eye
-    blk(DARK, 0, -6, 1, 1);
+    blk(DARK, 0, -10, 1, 1);
     // Chin strap
-    blk(DARK, 0, -5, 2, 1);
+    blk(DARK, 0, -8, 2, 1);
     // Neck
-    blk(SKIN, 1, -4, 2, 1);
+    blk(SKIN, 1, -7, 2, 1);
     // Shoulder pads
-    blk(WHITE, -1, -3, 7, 1);
-    // Jersey — crimson, crouching lean
-    blk(CRIM,  0, -3, 4, 3);
-    blk(CRIM2, 0, -1, 4, 1); // shadow
+    blk(WHITE, -1, -6, 7, 1);
+    // Jersey — crimson, standing upright
+    blk(CRIM,  0, -6, 4, 5);
+    blk(CRIM2, 0, -2, 4, 1); // shadow
     // Number 2
-    blk(WHITE, 1, -3, 2, 1);
-    blk(WHITE, 2, -2, 1, 1);
-    blk(WHITE, 1, -1, 2, 1);
-    // Arms out (bracing for hurdle)
-    blk(CRIM, -2, -2, 2, 1);
-    blk(SKIN, -3, -2, 1, 1);
-    blk(CRIM,  4, -2, 2, 1);
-    blk(SKIN,  6, -2, 1, 1);
-    // Pants — crimson, legs bent low in crouch
-    blk(CRIM, 0, 0, 2, 2);  // left leg bent
-    blk(CRIM, 2, 0, 2, 2);  // right leg bent
-    blk(CRIM, -1, 1, 2, 1); // left leg extended out
-    blk(CRIM,  3, 1, 2, 1); // right leg extended
-    // Cleats
-    blk(DARK, -1, 2, 3, 1);
-    blk(DARK,  3, 2, 3, 1);
+    blk(WHITE, 1, -6, 2, 1);
+    blk(WHITE, 2, -5, 1, 1);
+    blk(WHITE, 1, -4, 2, 1);
+    blk(WHITE, 0, -3, 1, 1);
+    blk(WHITE, 0, -2, 2, 1);
+    // Arms at sides
+    blk(CRIM, -1, -5, 1, 3);
+    blk(SKIN, -1, -3, 1, 1);
+    blk(CRIM,  4, -5, 1, 3);
+    blk(SKIN,  4, -3, 1, 1);
+    // Pants — crimson, standing straight
+    blk(CRIM, 0, -1, 2, 5);
+    blk(CRIM, 2, -1, 2, 5);
     // White stripe on pants
-    blk(WHITE, 0, 0, 1, 2);
-    blk(WHITE, 3, 0, 1, 2);
+    blk(WHITE, 0, -1, 1, 5);
+    blk(WHITE, 3, -1, 1, 5);
+    // Cleats
+    blk(DARK, -1, 4, 3, 1);
+    blk(DARK,  3, 4, 3, 1);
   }
 
   // ── KEWAN LACY PIXEL PLAYER ───────────────────────────
@@ -1915,7 +1915,7 @@ function showToast(msg, error=false) {
     const PERIOD = 310, DUR = 52;
     const tMod = Math.floor(t) % PERIOD;
     const inDodge = tMod < DUR;
-    const jumpPx = inDodge ? Math.round(Math.sin((tMod / DUR) * Math.PI) * 11) : 0;
+    const jumpPx = inDodge ? Math.round(Math.sin((tMod / DUR) * Math.PI) * 20) : 0;
     const x = baseX;
     const y = baseY - 12*p - jumpPx * p;
 
