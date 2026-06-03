@@ -1909,20 +1909,27 @@ function showToast(msg, error=false) {
       ctx.stroke();
     }
 
-    // Helmet — white with crimson stripe, facing LEFT
-    blk(WHITE,  0, -8, 5, 1); // top
-    blk(WHITE, -1, -7, 7, 4); // dome
-    blk(CRIM,   2, -8, 2, 5); // crimson stripe
-    blk(WHITE,  0, -4, 5, 1); // chin
-    // Facemask extending LEFT
-    blk(MASK, -3, -6, 3, 1);
-    blk(MASK, -3, -6, 1, 3);
-    blk(MASK, -3, -4, 3, 1);
-    blk(MASK, -2, -5, 1, 2);
-    // Eye
+    // Helmet — crimson dome, white mohawk stripe, side profile facing LEFT
+    // (mirrors Kewan's helmet style)
+    blk(CRIM,  5, -8, 1, 1);  // back dome tip
+    blk(CRIM2, 5, -7, 1, 4);  // back wall shadow
+    blk(CRIM, -1, -8, 6, 1);  // top row
+    blk(CRIM, -1, -7, 7, 4);  // dome body
+    blk(CRIM,  0, -3, 5, 1);  // chin curve
+    // White mohawk stripe down center-top
+    blk(WHITE, 1, -8, 2, 5);
+    // Facemask extending LEFT (mirrored from Kewan's)
+    blk(MASK, -5, -6, 3, 1);  // top bar
+    blk(MASK, -6, -6, 1, 4);  // vertical bar
+    blk(MASK, -5, -3, 3, 1);  // bottom bar
+    blk(MASK, -4, -5, 1, 3);  // inner vertical
+    // Eye visible through facemask gap
     blk(WHITE, 0, -6, 1, 1); blk(DARK, 0, -6, 1, 1);
+    // Alabama A logo
+    blk(WHITE, 3, -7, 1, 1);
     // Chin strap
-    blk(DARK, 0, -4, 2, 1);
+    blk(MASK, 0, -3, 4, 1);
+    blk(DARK, 1, -3, 2, 1);
     // Neck
     blk(SKIN, 1, -3, 2, 1);
     // Shoulder pads
