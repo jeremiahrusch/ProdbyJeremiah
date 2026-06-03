@@ -1962,132 +1962,142 @@ function showToast(msg, error=false) {
     ctx.restore();
   }
 
-  // ── SCENE 9: VAUGHT-HEMINGWAY STADIUM ────────────────
+  // ── SCENE 9: RETRO BOWL COLLEGE ──────────────────────
   function drawCollegeFootball(ctx, W, H, t, sx) {
-    // Night sky
+    // Retro Bowl blue sky
     const sky = ctx.createLinearGradient(0,0,0,H);
-    sky.addColorStop(0,'#030510');
-    sky.addColorStop(0.5,'#06091a');
-    sky.addColorStop(1,'#0a1030');
+    sky.addColorStop(0,'#5B9BD5');
+    sky.addColorStop(0.55,'#87CEEB');
+    sky.addColorStop(1,'#b0e0f8');
     ctx.fillStyle = sky; ctx.fillRect(0,0,W,H);
 
-    // Stars (sparse — stadium lights wash them out)
-    for (let s = 0; s < 18; s++) {
-      const stx = (s*113+s*7)%W; const sty = (s*37)%(H*0.2);
-      ctx.fillStyle = `rgba(255,255,255,${0.2+s%3*0.1})`;
-      ctx.beginPath(); ctx.arc(stx,sty,1,0,Math.PI*2); ctx.fill();
-    }
-
-    // Upper stands
-    ctx.fillStyle = '#12122a';
-    ctx.fillRect(0, H*0.04, W, H*0.26);
-    // Crowd rows
-    const crowdCols = ['#2979C8','#9B2335','#ffffff','#c8102e','#ffdd00','#003087'];
-    for (let c = 0; c < 100; c++) {
-      const cx = ((c*19+40 - sx*0.02+4000)%(W+60))-30;
-      const cy = H*0.05 + (c%6)*(H*0.04);
-      ctx.fillStyle = crowdCols[c%crowdCols.length];
-      ctx.fillRect(cx, cy, 9, 12);
-      // arms up occasionally
-      if (c%7===0) { ctx.fillRect(cx-3, cy-6, 3, 6); ctx.fillRect(cx+9, cy-6, 3, 6); }
-    }
-
-    // Stadium light towers (4)
-    for (let l = 0; l < 4; l++) {
-      const lx = ((l*320+60 - sx*0.04+3000)%(W+400))-200;
-      ctx.fillStyle = '#555566'; ctx.fillRect(lx-4, H*0.01, 8, H*0.29); // pole
-      ctx.fillStyle = '#ffffcc'; ctx.fillRect(lx-28, H*0.01, 56, 12);   // light bank
-      // glow
-      const grd = ctx.createRadialGradient(lx,H*0.04,0,lx,H*0.04,90);
-      grd.addColorStop(0,'rgba(255,255,200,0.25)');
-      grd.addColorStop(1,'rgba(255,255,200,0)');
-      ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(lx,H*0.04,90,0,Math.PI*2); ctx.fill();
-    }
-
-    // Scoreboard
-    const sbx = ((200 - sx*0.06+2000)%(W+500))-250;
-    ctx.fillStyle = '#0a0a0a'; ctx.fillRect(sbx, H*0.05, 200, 90);
-    ctx.strokeStyle = '#FFD700'; ctx.lineWidth = 3; ctx.strokeRect(sbx, H*0.05, 200, 90);
-    ctx.fillStyle = '#2979C8'; ctx.fillRect(sbx+4, H*0.05+4, 192, 20);
-    ctx.fillStyle = '#ffffff'; ctx.font = `bold 12px monospace`;
-    ctx.fillText('OLE MISS', sbx+10, H*0.05+19);
-    ctx.fillStyle = '#FFD700'; ctx.font = `bold 18px monospace`;
-    ctx.fillText('21', sbx+160, H*0.05+19);
-    ctx.fillStyle = '#9B2335'; ctx.fillRect(sbx+4, H*0.05+26, 192, 20);
-    ctx.fillStyle = '#ffffff'; ctx.font = `bold 12px monospace`;
-    ctx.fillText('ALABAMA', sbx+10, H*0.05+41);
-    ctx.fillStyle = '#ffffff'; ctx.font = `bold 18px monospace`;
-    ctx.fillText('14', sbx+160, H*0.05+41);
-    ctx.fillStyle = '#333333'; ctx.fillRect(sbx+4, H*0.05+48, 192, 38);
-    ctx.fillStyle = '#ff4400'; ctx.font = `bold 11px monospace`;
-    const blinkOn = Math.floor(t*0.05)%2===0;
-    ctx.fillText(`4TH QTR  0:${blinkOn?'23':'  '}`, sbx+10, H*0.05+66);
-    ctx.fillStyle = '#FFD700'; ctx.fillText('GROVE BOWL', sbx+10, H*0.05+84);
-
-    // Field surface — alternating stripes
-    for (let s = 0; s < 10; s++) {
-      ctx.fillStyle = s%2===0 ? '#1a7a1a' : '#1d8a1d';
-      ctx.fillRect(s*(W/10), H*0.3, W/10, H*0.7);
-    }
-
-    // End zone — Ole Miss left
-    ctx.fillStyle = '#1E5FAA';
-    ctx.fillRect(0, H*0.3, W*0.1, H*0.7);
-    ctx.fillStyle = '#ffffff'; ctx.font = `bold ${Math.floor(H*0.035)}px monospace`;
-    ctx.save(); ctx.translate(W*0.05, H*0.65); ctx.rotate(-Math.PI/2);
-    ctx.fillText('OLE MISS', -H*0.14, 0); ctx.restore();
-
-    // End zone — Alabama right
-    ctx.fillStyle = '#8B1A28';
-    ctx.fillRect(W*0.9, H*0.3, W*0.1, H*0.7);
+    // Retro Bowl-style chunky clouds
     ctx.fillStyle = '#ffffff';
-    ctx.save(); ctx.translate(W*0.95, H*0.65); ctx.rotate(-Math.PI/2);
+    const clouds = [[80,35,40],[260,25,32],[480,40,36],[720,28,30],[960,38,34],[1150,22,28]];
+    clouds.forEach(([cx,cy,r]) => {
+      const ox = ((cx - sx*0.12 + 2000)%(W+200))-100;
+      ctx.beginPath();
+      ctx.arc(ox,      cy,   r,   0, Math.PI*2); ctx.fill();
+      ctx.arc(ox+r*0.9,cy-r*0.3,r*0.7,0,Math.PI*2); ctx.fill();
+      ctx.arc(ox-r*0.7,cy-r*0.2,r*0.6,0,Math.PI*2); ctx.fill();
+    });
+
+    // ── RETRO BOWL SCOREBOARD (top-bar HUD style) ──
+    ctx.fillStyle = '#1a1a2e';
+    ctx.fillRect(0, 0, W, H*0.09);
+    ctx.fillStyle = '#16213e';
+    ctx.fillRect(0, H*0.09, W, 3);
+    // Ole Miss side
+    ctx.fillStyle = '#2979C8';
+    ctx.fillRect(W*0.18, H*0.01, W*0.27, H*0.07);
+    ctx.fillStyle = '#ffffff'; ctx.font = `bold ${Math.floor(H*0.038)}px monospace`;
+    ctx.fillText('OLE MISS', W*0.20, H*0.065);
+    ctx.fillStyle = '#FFD700'; ctx.font = `bold ${Math.floor(H*0.05)}px monospace`;
+    ctx.fillText('21', W*0.38, H*0.068);
+    // Center clock
+    ctx.fillStyle = '#0f0f0f';
+    ctx.fillRect(W*0.45, H*0.01, W*0.10, H*0.07);
+    const blinkOn = Math.floor(t*0.05)%2===0;
+    ctx.fillStyle = blinkOn ? '#ff4400' : '#882200';
+    ctx.font = `bold ${Math.floor(H*0.032)}px monospace`;
+    ctx.fillText('4Q', W*0.455, H*0.04);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('0:23', W*0.451, H*0.072);
+    // Alabama side
+    ctx.fillStyle = '#9B2335';
+    ctx.fillRect(W*0.55, H*0.01, W*0.27, H*0.07);
+    ctx.fillStyle = '#FFD700'; ctx.font = `bold ${Math.floor(H*0.05)}px monospace`;
+    ctx.fillText('14', W*0.56, H*0.068);
+    ctx.fillStyle = '#ffffff'; ctx.font = `bold ${Math.floor(H*0.038)}px monospace`;
+    ctx.fillText('ALABAMA', W*0.60, H*0.065);
+    // Down & distance
+    ctx.fillStyle = '#FFD700'; ctx.font = `bold ${Math.floor(H*0.028)}px monospace`;
+    ctx.fillText('3RD & 8', W*0.43, H*0.04);
+
+    // ── STANDS (chunky Retro Bowl pixel crowd) ──
+    ctx.fillStyle = '#c8c8c8'; ctx.fillRect(0, H*0.09, W, H*0.15); // concrete
+    ctx.fillStyle = '#aaaaaa'; ctx.fillRect(0, H*0.22, W, 4);
+    const rbCrowd = ['#2979C8','#ffffff','#9B2335','#FFD700','#1E5FAA','#cc0000'];
+    for (let c = 0; c < 120; c++) {
+      const cx = ((c*13+20 - sx*0.015+5000)%(W+30))-15;
+      const cy = H*0.10 + (c%4)*(H*0.028);
+      ctx.fillStyle = rbCrowd[c%rbCrowd.length];
+      ctx.fillRect(cx, cy, 10, 13);
+      // pixel head
+      ctx.fillStyle = '#c8845a';
+      ctx.fillRect(cx+2, cy-6, 6, 6);
+    }
+
+    // ── RETRO BOWL FIELD ──
+    // Alternating bright green stripes (Retro Bowl style)
+    for (let s = 0; s < 12; s++) {
+      ctx.fillStyle = s%2===0 ? '#3aaa3a' : '#2e962e';
+      ctx.fillRect(s*(W/12), H*0.24, W/12+1, H*0.76);
+    }
+
+    // End zone left — Ole Miss blue (chunky)
+    ctx.fillStyle = '#1E5FAA';
+    ctx.fillRect(0, H*0.24, W*0.1, H*0.76);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `bold ${Math.floor(H*0.04)}px monospace`;
+    ctx.save(); ctx.translate(W*0.052, H*0.62); ctx.rotate(-Math.PI/2);
+    ctx.fillText('OLE MISS', -H*0.16, 0); ctx.restore();
+
+    // End zone right — Alabama crimson (chunky)
+    ctx.fillStyle = '#8B1A28';
+    ctx.fillRect(W*0.9, H*0.24, W*0.1, H*0.76);
+    ctx.fillStyle = '#ffffff';
+    ctx.save(); ctx.translate(W*0.952, H*0.62); ctx.rotate(-Math.PI/2);
     ctx.fillText('ALABAMA', -H*0.14, 0); ctx.restore();
 
-    // Yard lines + numbers
-    ctx.strokeStyle = 'rgba(255,255,255,0.75)'; ctx.lineWidth = 2;
+    // Yard lines — thick, chunky, Retro Bowl style
     for (let y = 0; y <= 10; y++) {
-      const yx = ((W*0.1 + y*(W*0.8/10) - sx*0.6 + 6000) % (W*1.2)) - W*0.1;
-      ctx.beginPath(); ctx.moveTo(yx, H*0.3); ctx.lineTo(yx, H); ctx.stroke();
+      const yx = ((W*0.1 + y*(W*0.8/10) - sx*0.7 + 7000) % (W*1.3)) - W*0.15;
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      ctx.fillRect(yx-2, H*0.24, 4, H*0.76);
       if (y>0 && y<10) {
         const num = y<=5 ? y*10 : (10-y)*10;
-        ctx.fillStyle='rgba(255,255,255,0.55)'; ctx.font=`${Math.floor(H*0.028)}px monospace`;
-        ctx.fillText(num, yx+4, H*0.35);
+        ctx.fillStyle='rgba(255,255,255,0.8)';
+        ctx.font=`bold ${Math.floor(H*0.04)}px monospace`;
+        ctx.fillText(num, yx+6, H*0.30);
       }
     }
 
-    // Hash marks
-    for (let h = 0; h < 25; h++) {
-      const hx = ((h*(W/14) - sx*0.6+6000)%(W+80))-40;
-      ctx.strokeStyle='rgba(255,255,255,0.35)'; ctx.lineWidth=1;
-      ctx.beginPath(); ctx.moveTo(hx,H*0.52); ctx.lineTo(hx+14,H*0.52); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(hx,H*0.67); ctx.lineTo(hx+14,H*0.67); ctx.stroke();
+    // Hash marks (chunky)
+    for (let h = 0; h < 28; h++) {
+      const hx = ((h*(W/15) - sx*0.7+7000)%(W+100))-50;
+      ctx.fillStyle='rgba(255,255,255,0.5)';
+      ctx.fillRect(hx, H*0.48, 16, 3);
+      ctx.fillRect(hx, H*0.63, 16, 3);
     }
 
-    // Goal posts (yellow, both ends)
+    // Goal posts — chunky Retro Bowl yellow
     for (let g = 0; g < 3; g++) {
-      const gx = ((g*(W*0.45)+W*0.1 - sx*0.6+6000)%(W+300))-150;
+      const gx = ((g*(W*0.45)+W*0.1 - sx*0.7+7000)%(W+300))-150;
       ctx.fillStyle='#FFD700';
-      ctx.fillRect(gx-3, H*0.31, 6, H*0.22);          // base upright
-      ctx.fillRect(gx-22, H*0.41, 44, 5);              // crossbar
-      ctx.fillRect(gx-24, H*0.31, 5, H*0.14);          // left fork
-      ctx.fillRect(gx+19, H*0.31, 5, H*0.14);          // right fork
+      ctx.fillRect(gx-4, H*0.25, 8, H*0.20);   // base
+      ctx.fillRect(gx-28, H*0.36, 56, 6);        // crossbar
+      ctx.fillRect(gx-30, H*0.25, 6, H*0.13);   // left fork
+      ctx.fillRect(gx+24, H*0.25, 6, H*0.13);   // right fork
+      // shadow
+      ctx.fillStyle='rgba(0,0,0,0.2)';
+      ctx.fillRect(gx+4, H*0.26, 4, H*0.19);
     }
 
-    // Floating rings over the field
+    // Floating rings
     for (let r = 0; r < 4; r++) {
       const rx = ((r*200+90 - sx*0.85+2000)%(W+200))-100;
-      const ry = H*0.38 + Math.sin(t*0.05+r)*14;
+      const ry = H*0.30 + Math.sin(t*0.05+r)*12;
       drawRing(ctx, rx, ry, 13, t+r*42);
     }
 
-    // Kewan Lacy running through the stadium
+    // Players on field
     const lacyX9 = ((t * 3.2 - sx * 0.9 + 250) % (W + 300)) - 150;
     const ryanX9 = W + 100 - ((t * 3.0 + 900) % (W + 400));
     const dx9 = ryanX9 - lacyX9; const jump9 = (dx9 > -50 && dx9 < 100) ? Math.round(20 * Math.sin(Math.PI * (dx9 + 50) / 150)) : 0;
-    if (ryanX9 > -150 && ryanX9 < W + 150) drawRyanWilliams(ctx, ryanX9, H * 0.73, t);
-    for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.18+r*0.1), t+r*20); }
-    drawKewanLacy(ctx, lacyX9, H * 0.73, t, jump9);
+    if (ryanX9 > -150 && ryanX9 < W + 150) drawRyanWilliams(ctx, ryanX9, H * 0.76, t);
+    for (let r = 0; r < 3; r++) { const rx = W - ((t*5 + r*370)%(W+500)); drawPixelRocket(ctx, rx, H*(0.14+r*0.06), t+r*20); }
+    drawKewanLacy(ctx, lacyX9, H * 0.76, t, jump9);
   }
 
   // ── KEWAN LACY PIXEL PLAYER ───────────────────────────
